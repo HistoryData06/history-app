@@ -669,7 +669,7 @@
             `;
 
             // ✅ FIX: Use the full URL
-            const apiUrl = `https://history-app-z99b.onrender.com/api/events?month=${month}&day=${day}`;
+            const apiUrl = `/api/events?month=${month}&day=${day}`;
             
             fetch(apiUrl)
                 .then(response => {
@@ -878,5 +878,4 @@
                         localStorage.setItem('quizScore', score);
                         updateQuizStats();
                     } else {
-                        btn.classList.add('wrong');
-                        resultDiv.innerHTML = `❌ Wrong! Correct: ${currentQuiz.correct.text
+                        btn.classList.add('wrong
