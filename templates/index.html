@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
-    <title>📅 Today in History</title>
-    <style>
-        *{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:#000;min-height:100vh;padding:20px;color:#fff}.container{max-width:580px;margin:0 auto;padding:10px 0 30px}.header{text-align:center;padding:30px 20px 25px;margin-bottom:30px;border-bottom:3px solid #FFD700}.header h1{font-size:2.2em;font-weight:900;letter-spacing:6px;color:#FFD700;text-transform:uppercase}.header .date{font-size:1.1em;color:#fff;margin-top:14px;letter-spacing:3px}.lang-selector{background:#0a0a0a;border-radius:12px;padding:12px 20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);display:flex;align-items:center;gap:12px;flex-wrap:wrap}.lang-selector label{color:#FFD700;font-weight:700;font-size:.85em;letter-spacing:2px}.lang-selector select{flex:1;padding:8px 14px;border-radius:8px;border:1px solid rgba(255,215,0,0.2);background:#1a1a1a;color:#fff;font-size:.95em;cursor:pointer;min-width:120px}.view-toggle{display:flex;gap:10px;margin-bottom:22px}.view-toggle button{flex:1;padding:12px;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#888;font-size:.85em;cursor:pointer;font-weight:600}.view-toggle button.active{background:rgba(255,215,0,0.15);border-color:#FFD700;color:#FFD700}.calendar-container{background:#0a0a0a;border-radius:12px;padding:20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15)}.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}.calendar-header .month-year{color:#FFD700;font-size:1.1em;font-weight:700;letter-spacing:2px}.calendar-header .nav-btn{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;padding:8px 16px;cursor:pointer}.calendar-header .today-btn-cal{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;padding:8px 16px;cursor:pointer;font-size:.8em}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.calendar-grid .day-name{text-align:center;color:#888;font-size:.7em;padding:6px 0;font-weight:700;text-transform:uppercase}.calendar-grid .day-cell{text-align:center;padding:8px 0;border-radius:8px;cursor:pointer;font-size:.9em;color:#888;position:relative}.calendar-grid .day-cell:hover{background:rgba(255,215,0,0.1)}.calendar-grid .day-cell.has-events{color:#fff;font-weight:700}.calendar-grid .day-cell.has-events::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:#FFD700}.calendar-grid .day-cell.today{background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.2);color:#FFD700;font-weight:900}.calendar-grid .day-cell.selected{background:#FFD700;color:#000;font-weight:900}.calendar-grid .day-cell.selected::after{background:#000}.calendar-grid .day-cell.other-month{color:#333}.calendar-legend{display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:.7em;color:#888}.calendar-legend span{display:flex;align-items:center;gap:6px}.calendar-legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#FFD700}.calendar-legend .dot.gray{background:#555}.date-picker{background:#0a0a0a;border-radius:12px;padding:18px 20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);display:flex;gap:10px;align-items:center;flex-wrap:wrap}.date-picker input{flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,215,0,0.2);background:#1a1a1a;color:#fff;font-size:1em;min-width:150px}.date-picker input:focus{outline:none;border-color:#FFD700}.date-picker .go-btn{padding:10px 24px;background:#FFD700;border:none;border-radius:8px;color:#000;font-weight:900;cursor:pointer}.date-picker .today-btn{padding:10px 16px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;cursor:pointer}.card{background:#0a0a0a;border-radius:12px;padding:24px 22px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15)}.card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid rgba(255,215,0,0.08)}.card-header h2{font-size:.85em;color:#FFD700;letter-spacing:3px;text-transform:uppercase}.card-header .badge{margin-left:auto;background:rgba(255,215,0,0.1);padding:2px 12px;border-radius:20px;color:#FFD700;font-size:.65em}.event-item{padding:12px 0;border-bottom:1px solid rgba(255,215,0,0.04);display:flex;gap:14px;align-items:flex-start}.event-item:last-child{border-bottom:none}.event-year{flex-shrink:0;color:#FFD700;font-weight:900;min-width:58px;padding:2px 10px;background:rgba(255,215,0,0.06);border-radius:20px;text-align:center;border:1px solid rgba(255,215,0,0.08)}.event-text{color:#fff;font-size:.95em;line-height:1.6;font-weight:300;flex:1}.event-fav-btn{background:none;border:none;font-size:1.2em;cursor:pointer;padding:0 8px;color:#555}.event-fav-btn.favorited{color:#FFD700}.event-remove-btn{background:none;border:none;color:#ff6b6b;font-size:1.2em;cursor:pointer;padding:0 8px}.fact-card{background:#0a0a0a;border-radius:12px;padding:20px 22px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);text-align:center}.fact-card .fact-text{color:#fff;font-size:.95em;line-height:1.6;font-weight:300}.fact-btn{margin-top:12px;padding:8px 20px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:20px;color:#FFD700;cursor:pointer;font-size:.8em}.quiz-container{margin-top:16px;border-top:1px solid rgba(255,215,0,0.1);padding-top:16px}.quiz-container .quiz-label{color:#FFD700;font-weight:700;font-size:.85em;display:block;margin-bottom:10px}.quiz-container .quiz-question{font-size:1em;color:#fff;margin-bottom:10px}.quiz-container .quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}.quiz-container .quiz-options button{padding:10px 12px;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#fff;font-size:.8em;cursor:pointer;text-align:left;font-family:inherit}.quiz-container .quiz-options button:hover{background:rgba(255,215,0,0.15)}.quiz-container .quiz-options button.correct{background:rgba(0,255,0,0.2);border-color:#0f0}.quiz-container .quiz-options button.wrong{background:rgba(255,0,0,0.2);border-color:#f00}.quiz-container .quiz-result{margin-top:10px;font-weight:600;font-size:.95em;min-height:1.5em}.quiz-container .quiz-result.correct{color:#0f0}.quiz-container .quiz-result.wrong{color:#ff6b6b}.quiz-container .quiz-stats{margin-top:10px;font-size:.85em;color:#FFD700;text-align:center}.refresh-btn{display:block;width:100%;padding:18px;background:#FFD700;border:none;border-radius:50px;color:#000;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:4px;margin-top:8px}.share-section{display:flex;gap:10px;margin-top:8px}.share-btn{flex:1;padding:12px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#FFD700;font-size:.85em;cursor:pointer;text-align:center;font-weight:600}.loading-state{text-align:center;padding:50px 20px;color:#666}.spinner{display:inline-block;width:40px;height:40px;border:3px solid rgba(255,215,0,0.08);border-top:3px solid #FFD700;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.footer{text-align:center;color:#333;font-size:.7em;padding:30px 0 10px;border-top:1px solid rgba(255,215,0,0.04);margin-top:10px}
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+<title>📅 Today in History</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:#000;min-height:100vh;padding:20px;color:#fff}.container{max-width:580px;margin:0 auto;padding:10px 0 30px}.header{text-align:center;padding:30px 20px 25px;margin-bottom:30px;border-bottom:3px solid #FFD700}.header h1{font-size:2.2em;font-weight:900;letter-spacing:6px;color:#FFD700;text-transform:uppercase}.header .date{font-size:1.1em;color:#fff;margin-top:14px;letter-spacing:3px}.lang-selector{background:#0a0a0a;border-radius:12px;padding:12px 20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);display:flex;align-items:center;gap:12px;flex-wrap:wrap}.lang-selector label{color:#FFD700;font-weight:700;font-size:.85em;letter-spacing:2px}.lang-selector select{flex:1;padding:8px 14px;border-radius:8px;border:1px solid rgba(255,215,0,0.2);background:#1a1a1a;color:#fff;font-size:.95em;cursor:pointer;min-width:120px}.view-toggle{display:flex;gap:10px;margin-bottom:22px}.view-toggle button{flex:1;padding:12px;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#888;font-size:.85em;cursor:pointer;font-weight:600}.view-toggle button.active{background:rgba(255,215,0,0.15);border-color:#FFD700;color:#FFD700}.calendar-container{background:#0a0a0a;border-radius:12px;padding:20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15)}.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}.calendar-header .month-year{color:#FFD700;font-size:1.1em;font-weight:700;letter-spacing:2px}.calendar-header .nav-btn{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;padding:8px 16px;cursor:pointer}.calendar-header .today-btn-cal{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;padding:8px 16px;cursor:pointer;font-size:.8em}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.calendar-grid .day-name{text-align:center;color:#888;font-size:.7em;padding:6px 0;font-weight:700;text-transform:uppercase}.calendar-grid .day-cell{text-align:center;padding:8px 0;border-radius:8px;cursor:pointer;font-size:.9em;color:#888;position:relative}.calendar-grid .day-cell:hover{background:rgba(255,215,0,0.1)}.calendar-grid .day-cell.has-events{color:#fff;font-weight:700}.calendar-grid .day-cell.has-events::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:#FFD700}.calendar-grid .day-cell.today{background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.2);color:#FFD700;font-weight:900}.calendar-grid .day-cell.selected{background:#FFD700;color:#000;font-weight:900}.calendar-grid .day-cell.selected::after{background:#000}.calendar-grid .day-cell.other-month{color:#333}.calendar-legend{display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:.7em;color:#888}.calendar-legend span{display:flex;align-items:center;gap:6px}.calendar-legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#FFD700}.calendar-legend .dot.gray{background:#555}.date-picker{background:#0a0a0a;border-radius:12px;padding:18px 20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);display:flex;gap:10px;align-items:center;flex-wrap:wrap}.date-picker input{flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,215,0,0.2);background:#1a1a1a;color:#fff;font-size:1em;min-width:150px}.date-picker input:focus{outline:none;border-color:#FFD700}.date-picker .go-btn{padding:10px 24px;background:#FFD700;border:none;border-radius:8px;color:#000;font-weight:900;cursor:pointer}.date-picker .today-btn{padding:10px 16px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;cursor:pointer}.card{background:#0a0a0a;border-radius:12px;padding:24px 22px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15)}.card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid rgba(255,215,0,0.08)}.card-header h2{font-size:.85em;color:#FFD700;letter-spacing:3px;text-transform:uppercase}.card-header .badge{margin-left:auto;background:rgba(255,215,0,0.1);padding:2px 12px;border-radius:20px;color:#FFD700;font-size:.65em}.event-item{padding:12px 0;border-bottom:1px solid rgba(255,215,0,0.04);display:flex;gap:14px;align-items:flex-start}.event-item:last-child{border-bottom:none}.event-year{flex-shrink:0;color:#FFD700;font-weight:900;min-width:58px;padding:2px 10px;background:rgba(255,215,0,0.06);border-radius:20px;text-align:center;border:1px solid rgba(255,215,0,0.08)}.event-text{color:#fff;font-size:.95em;line-height:1.6;font-weight:300;flex:1}.event-fav-btn{background:none;border:none;font-size:1.2em;cursor:pointer;padding:0 8px;color:#555}.event-fav-btn.favorited{color:#FFD700}.event-remove-btn{background:none;border:none;color:#ff6b6b;font-size:1.2em;cursor:pointer;padding:0 8px}.fact-card{background:#0a0a0a;border-radius:12px;padding:20px 22px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);text-align:center}.fact-card .fact-text{color:#fff;font-size:.95em;line-height:1.6;font-weight:300}.fact-btn{margin-top:12px;padding:8px 20px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:20px;color:#FFD700;cursor:pointer;font-size:.8em}.quiz-container{margin-top:16px;border-top:1px solid rgba(255,215,0,0.1);padding-top:16px}.quiz-container .quiz-label{color:#FFD700;font-weight:700;font-size:.85em;display:block;margin-bottom:10px}.quiz-container .quiz-question{font-size:1em;color:#fff;margin-bottom:10px}.quiz-container .quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}.quiz-container .quiz-options button{padding:10px 12px;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#fff;font-size:.8em;cursor:pointer;text-align:left;font-family:inherit}.quiz-container .quiz-options button:hover{background:rgba(255,215,0,0.15)}.quiz-container .quiz-options button.correct{background:rgba(0,255,0,0.2);border-color:#0f0}.quiz-container .quiz-options button.wrong{background:rgba(255,0,0,0.2);border-color:#f00}.quiz-container .quiz-result{margin-top:10px;font-weight:600;font-size:.95em;min-height:1.5em}.quiz-container .quiz-result.correct{color:#0f0}.quiz-container .quiz-result.wrong{color:#ff6b6b}.quiz-container .quiz-stats{margin-top:10px;font-size:.85em;color:#FFD700;text-align:center}.refresh-btn{display:block;width:100%;padding:18px;background:#FFD700;border:none;border-radius:50px;color:#000;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:4px;margin-top:8px}.share-section{display:flex;gap:10px;margin-top:8px}.share-btn{flex:1;padding:12px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#FFD700;font-size:.85em;cursor:pointer;text-align:center;font-weight:600}.loading-state{text-align:center;padding:50px 20px;color:#666}.spinner{display:inline-block;width:40px;height:40px;border:3px solid rgba(255,215,0,0.08);border-top:3px solid #FFD700;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.footer{text-align:center;color:#333;font-size:.7em;padding:30px 0 10px;border-top:1px solid rgba(255,215,0,0.04);margin-top:10px}
 .badges-container{background:#0a0a0a;border-radius:12px;padding:20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15)}.badges-title{color:#FFD700;font-size:.9em;font-weight:700;letter-spacing:2px;margin-bottom:12px;text-align:center}.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px}.badge-item{background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.1);border-radius:12px;padding:12px 6px;text-align:center;transition:all .3s ease;opacity:.4;filter:grayscale(1)}.badge-item.unlocked{opacity:1;filter:grayscale(0);border-color:rgba(255,215,0,0.3);background:rgba(255,215,0,0.1)}.badge-item .badge-icon{font-size:2em;display:block;margin-bottom:4px}.badge-item .badge-name{font-size:.6em;color:#888;display:block}.badge-item.unlocked .badge-name{color:#FFD700}
 @media(max-width:480px){body{padding:12px}.header h1{font-size:1.6em}.date-picker{flex-direction:column}.date-picker input{width:100%}.quiz-container .quiz-options{grid-template-columns:1fr 1fr}.lang-selector{flex-direction:column;align-items:stretch}.calendar-grid .day-cell{padding:6px 0;font-size:.8em}.badges-grid{grid-template-columns:repeat(auto-fill,minmax(65px,1fr))}}@media(max-width:380px){.quiz-container .quiz-options{grid-template-columns:1fr}.calendar-grid .day-cell{padding:4px 0;font-size:.7em}}
 </style>
@@ -78,143 +78,427 @@
 <button class="refresh-btn" id="refreshBtn" onclick="loadEvents()">⟳ Refresh</button>
 <div class="footer" id="footerText">Built with ❤️ • Wikipedia</div>
 </div>
-<script>
-    function generateQuiz(){
-    let t=[];
-    if(currentEvents.events)t.push(...currentEvents.events.map(t=>({...t,type:'event'})));
-    if(currentEvents.births)t.push(...currentEvents.births.map(t=>({...t,type:'birth'})));
-    if(currentEvents.deaths)t.push(...currentEvents.deaths.map(t=>({...t,type:'death'})));
-    if(t.length<4){
-        document.getElementById('quizQuestion').innerHTML=getText('quiz_not_enough');
-        document.getElementById('quizOptions').innerHTML='';
-        document.getElementById('quizResult').innerHTML='';
-        return
-    }
-    let e=t[Math.floor(Math.random()*t.length)],n=t.filter(t=>t.year!==e.year).sort(()=>Math.random()-.5).slice(0,3);
-    while(n.length<3){
-        let t=['1776','1865','1941','1969','1492','1789'],o=['Declaration of Independence','Civil War ended','Pearl Harbor attack','Moon landing','Columbus arrived','French Revolution'],a=n.length;
-        n.push({year:t[a%t.length],text:o[a%o.length],type:'event'})
-    }
-    let o=[e,...n].sort(()=>Math.random()-.5);
-    window.currentQuiz={correct:e,options:o};
-    window.quizAnswered=false;
-    document.getElementById('quizQuestion').innerHTML=getText('quiz_question')+' <strong>'+e.year+'</strong>?';
-    let optionsContainer=document.getElementById('quizOptions');
-    optionsContainer.innerHTML='';
-    o.forEach(option=>{
-        let btn=document.createElement('button');
-        btn.textContent=option.text.substring(0,40)+(option.text.length>40?'...':'');
-        btn.onclick=function(){
-            if(window.quizAnswered)return;
-            window.quizAnswered=true;
-            let resultDiv=document.getElementById('quizResult');
-            if(option.year===window.currentQuiz.correct.year&&option.text===window.currentQuiz.correct.text){
-                btn.classList.add('correct');
-                resultDiv.innerHTML=getText('quiz_correct');
-                resultDiv.className='quiz-result correct';
-                let score=parseInt(localStorage.getItem('quizScore')||'0');
-                score++;
-                localStorage.setItem('quizScore',score);
-                updateQuizStats();
-                badges.stats.quizCorrect=(badges.stats.quizCorrect||0)+1;
-                localStorage.setItem('historyBadges',JSON.stringify(badges));
-                checkBadges();
-            }else{
-                btn.classList.add('wrong');
-                resultDiv.innerHTML=getText('quiz_wrong')+' '+window.currentQuiz.correct.text;
-                resultDiv.className='quiz-result wrong';
-                document.querySelectorAll('#quizOptions button').forEach(b=>{
-                    if(b.textContent===window.currentQuiz.correct.text.substring(0,40)||b.textContent===window.currentQuiz.correct.text.substring(0,40)+'...'){
-                        b.classList.add('correct');
-                    }
-                });
+<script>let currentLang=localStorage.getItem('historyLang')||'en',translations={},currentEvents=[],favorites=JSON.parse(localStorage.getItem('historyFavorites')||'[]'),currentView='list',calendarMonth=new Date().getMonth(),calendarYear=new Date().getFullYear(),calendarData={};
+
+let badges=JSON.parse(localStorage.getItem('historyBadges')||'{"unlocked":[],"stats":{"visits":0,"datesViewed":0,"favoritesSaved":0,"quizCorrect":0,"shares":0,"factsUsed":0,"languagesUsed":[]}}');
+
+const BADGE_DEFS={
+welcome:{id:'welcome',name:'Welcome!',icon:'👋',desc:'First visit',check:()=>badges.stats.visits>=1},
+explorer:{id:'explorer',name:'Explorer',icon:'🗺️',desc:'View 5 dates',check:()=>badges.stats.datesViewed>=5},
+collector:{id:'collector',name:'Collector',icon:'📚',desc:'Save 3 favorites',check:()=>badges.stats.favoritesSaved>=3},
+scholar:{id:'scholar',name:'Scholar',icon:'🎓',desc:'Get 5 quiz answers right',check:()=>badges.stats.quizCorrect>=5},
+sharer:{id:'sharer',name:'Sharer',icon:'📤',desc:'Share 3 times',check:()=>badges.stats.shares>=3},
+factfinder:{id:'factfinder',name:'Fact Finder',icon:'🔍',desc:'Use random fact 10 times',check:()=>badges.stats.factsUsed>=10},
+polyglot:{id:'polyglot',name:'Polyglot',icon:'🌍',desc:'Try all 10 languages',check:()=>badges.stats.languagesUsed.length>=10}
+};
+
+function checkBadges(){
+let newUnlock=false;
+Object.values(BADGE_DEFS).forEach(b=>{
+if(!badges.unlocked.includes(b.id)&&b.check()){
+badges.unlocked.push(b.id);
+newUnlock=true;
+console.log('🏆 Unlocked badge:',b.name);
+}
+});
+if(newUnlock){
+localStorage.setItem('historyBadges',JSON.stringify(badges));
+renderBadges();
+}
+}
+
+function renderBadges(){
+let grid=document.getElementById('badgesGrid');
+if(!grid)return;
+let html='';
+Object.values(BADGE_DEFS).forEach(b=>{
+let unlocked=badges.unlocked.includes(b.id);
+html+=`<div class="badge-item ${unlocked?'unlocked':''}"><span class="badge-icon">${b.icon}</span><span class="badge-name">${b.name}</span></div>`;
+});
+grid.innerHTML=html;
+}
+
+function setView(t){
+currentView=t;
+document.getElementById('listViewBtn').className=t==='list'?'active':'';
+document.getElementById('calendarViewBtn').className=t==='calendar'?'active':'';
+document.getElementById('badgesViewBtn').className=t==='badges'?'active':'';
+document.getElementById('listView').style.display=t==='list'?'block':'none';
+document.getElementById('calendarView').style.display=t==='calendar'?'block':'none';
+document.getElementById('badgesView').style.display=t==='badges'?'block':'none';
+if(t==='calendar')renderCalendar(calendarMonth,calendarYear);
+if(t==='badges')renderBadges();
+}
+
+function generateCalendarData(){
+let t=new Date,e=t.getFullYear(),n=t.getMonth(),o=new Date(e,n+1,0).getDate();
+calendarData={};
+[1,3,5,8,12,15,18,20,22,25,27,28,30].forEach(d=>{
+if(d<=o)calendarData[e+'-'+String(n+1).padStart(2,'0')+'-'+String(d).padStart(2,'0')]=!0
+});
+calendarData[e+'-'+String(n+1).padStart(2,'0')+'-'+String(t.getDate()).padStart(2,'0')]=!0
+}
+
+async function loadTranslations(){
+try{
+let t=await fetch('/api/languages'),e=await t.json();
+translations=e
+}catch(t){console.error('Error loading translations:',t)}
+}
+
+function changeLanguage(t){
+currentLang=t;
+localStorage.setItem('historyLang',t);
+document.getElementById('langSelect').value=t;
+if(!badges.stats.languagesUsed.includes(t)){
+badges.stats.languagesUsed.push(t);
+localStorage.setItem('historyBadges',JSON.stringify(badges));
+}
+updateUI();
+loadEvents();
+checkBadges();
+}
+
+function getText(t){
+return translations[currentLang]&&translations[currentLang][t]?translations[currentLang][t]:translations.en&&translations.en[t]?translations.en[t]:t
+}
+
+function updateUI(){
+document.getElementById('appTitle').textContent=getText('app_title');
+document.getElementById('dateLabel').textContent=getText('date_label');
+document.getElementById('goBtn').textContent=getText('go_btn');
+document.getElementById('todayBtn').textContent=getText('today_btn');
+document.getElementById('randomBtn').innerHTML=getText('random_btn');
+document.getElementById('quizLabel').textContent=getText('quiz_label');
+document.getElementById('quizNewBtn').textContent=getText('quiz_new');
+document.getElementById('favoritesLabel').textContent=getText('favorites_label');
+document.getElementById('shareAllBtn').textContent=getText('share_all');
+document.getElementById('shareTodayBtn').textContent=getText('share_today');
+document.getElementById('refreshBtn').textContent=getText('refresh_btn');
+document.getElementById('footerText').textContent=getText('footer');
+document.getElementById('loadingText').textContent=getText('loading');
+}
+
+function renderCalendar(t,e){
+let n=new Date,o=new Date(e,t,1).getDay(),a=new Date(e,t+1,0).getDate(),l=new Date(e,t,0).getDate(),r=['January','February','March','April','May','June','July','August','September','October','November','December'];
+document.getElementById('calendarTitle').textContent=r[t]+' '+e;
+let c=document.getElementById('calendarGrid');
+c.innerHTML='';
+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].forEach(t=>{
+let e=document.createElement('div');
+e.className='day-name';
+e.textContent=t;
+c.appendChild(e)
+});
+let d=o===0?6:o-1;
+for(let t=d-1;t>=0;t--){
+let e=document.createElement('div');
+e.className='day-cell other-month';
+e.textContent=l-t;
+c.appendChild(e)
+}
+let s=getDateFromInput();
+for(let o=1;o<=a;o++){
+let a=document.createElement('div');
+a.className='day-cell';
+a.textContent=o;
+let l=e+'-'+String(t+1).padStart(2,'0')+'-'+String(o).padStart(2,'0');
+if(calendarData[l])a.classList.add('has-events');
+if(e===n.getFullYear()&&t===n.getMonth()&&o===n.getDate())a.classList.add('today');
+if(e===s.getFullYear()&&t===s.getMonth()&&o===s.getDate())a.classList.add('selected');
+a.onclick=function(){
+let n=new Date(e,t,o);
+document.getElementById('dateInput').value=e+'-'+String(t+1).padStart(2,'0')+'-'+String(o).padStart(2,'0');
+setView('list');
+loadEvents()
+};
+c.appendChild(a)
+}
+let u=d+a,m=42-u;
+for(let t=1;t<=m;t++){
+let e=document.createElement('div');
+e.className='day-cell other-month';
+e.textContent=t;
+c.appendChild(e)
+}
+}
+
+function changeMonth(t){
+calendarMonth+=t;
+if(calendarMonth>11){calendarMonth=0;calendarYear++}
+else if(calendarMonth<0){calendarMonth=11;calendarYear--}
+renderCalendar(calendarMonth,calendarYear)
+}
+
+function goTodayCalendar(){
+let t=new Date;
+calendarMonth=t.getMonth();
+calendarYear=t.getFullYear();
+renderCalendar(calendarMonth,calendarYear)
+}
+
+function formatDate(t){
+return t.toLocaleDateString('en-US',{month:'long',day:'numeric',year:'numeric'})
+}
+
+function getDateFromInput(){
+let t=document.getElementById('dateInput').value;
+if(t){
+let e=t.split('-');
+return new Date(parseInt(e[0]),parseInt(e[1])-1,parseInt(e[2]))
+}
+return new Date
+}
+
+function isFavorited(t,e){
+return favorites.some(n=>n.year===t&&n.text===e)
+}
+
+function toggleFavorite(t,e,n){
+let o=favorites.findIndex(f=>f.year===t&&f.text===e);
+if(o>-1){
+favorites.splice(o,1)
+}else{
+favorites.push({year:t,text:e,type:n,date:new Date().toISOString()});
+badges.stats.favoritesSaved=favorites.length;
+localStorage.setItem('historyBadges',JSON.stringify(badges))
+}
+localStorage.setItem('historyFavorites',JSON.stringify(favorites));
+renderFavorites();
+loadEvents();
+checkBadges()
+}
+
+function renderFavorites(){
+let t=document.getElementById('favoritesCard'),e=document.getElementById('favoritesList'),n=document.getElementById('favCount');
+if(favorites.length===0){t.style.display='none';return}
+t.style.display='block';
+n.textContent=favorites.length;
+let o='';
+favorites.forEach(t=>{
+o+=`<div class="event-item"><span class="event-year">${t.year}</span><span class="event-text">${t.text}</span><button class="event-remove-btn" onclick="removeFavorite('${t.year}','${t.text.replace(/'/g,"\\'")}')">✕</button></div>`
+});
+e.innerHTML=o
+}
+
+function removeFavorite(t,e){
+favorites=favorites.filter(n=>!(n.year===t&&n.text===e));
+localStorage.setItem('historyFavorites',JSON.stringify(favorites));
+renderFavorites();
+loadEvents()
+}
+
+let viewedDates=[];
+
+async function loadEvents(){
+let t=getDateFromInput(),e=t.getMonth()+1,n=t.getDate();
+document.getElementById('headerDate').innerHTML=formatDate(t);
+let o=document.getElementById('content');
+o.innerHTML=`<div class="loading-state"><div class="spinner"></div><p>${getText('loading')}</p></div>`;
+try{
+let a=await fetch('/api/events?month='+e+'&day='+n),l=await a.json();
+currentEvents=l;
+let r='';
+if(l.events&&l.events.length>0){
+r+=`<div class="card"><div class="card-header"><h2>${getText('events_label')}</h2><span class="badge">${l.events.length}</span></div>`;
+l.events.forEach(t=>{
+let e=isFavorited(t.year,t.text);
+r+=`<div class="event-item"><span class="event-year">${t.year}</span><span class="event-text">${t.text}</span><button class="event-fav-btn ${e?'favorited':''}" onclick="toggleFavorite('${t.year}','${t.text.replace(/'/g,"\\'")}','event')">${e?'⭐':'☆'}</button></div>`
+});
+r+='</div>'
+}
+if(l.births&&l.births.length>0){
+r+=`<div class="card"><div class="card-header"><h2>${getText('births_label')}</h2><span class="badge">${l.births.length}</span></div>`;
+l.births.forEach(t=>{
+let e=isFavorited(t.year,t.text);
+r+=`<div class="event-item"><span class="event-year">${t.year}</span><span class="event-text">${t.text}</span><button class="event-fav-btn ${e?'favorited':''}" onclick="toggleFavorite('${t.year}','${t.text.replace(/'/g,"\\'")}','birth')">${e?'⭐':'☆'}</button></div>`
+});
+r+='</div>'
+}
+if(l.deaths&&l.deaths.length>0){
+r+=`<div class="card"><div class="card-header"><h2>${getText('deaths_label')}</h2><span class="badge">${l.deaths.length}</span></div>`;
+l.deaths.forEach(t=>{
+let e=isFavorited(t.year,t.text);
+r+=`<div class="event-item"><span class="event-year">${t.year}</span><span class="event-text">${t.text}</span><button class="event-fav-btn ${e?'favorited':''}" onclick="toggleFavorite('${t.year}','${t.text.replace(/'/g,"\\'")}','death')">${e?'⭐':'☆'}</button></div>`
+});
+r+='</div>'
+}
+if(!r)r=`<div class="card" style="text-align:center;padding:40px 20px;"><p style="color:#888888;">${getText('no_events')}</p></div>`;
+o.innerHTML=r;
+renderFavorites();
+setTimeout(generateQuiz,500);
+let dateKey=t.toDateString();
+if(!viewedDates.includes(dateKey)){
+viewedDates.push(dateKey);
+badges.stats.datesViewed=viewedDates.length;
+localStorage.setItem('historyBadges',JSON.stringify(badges));
+checkBadges()
+}
+}catch(t){
+o.innerHTML=`<div class="card" style="text-align:center;padding:40px 20px;"><p style="color:#ff6b6b;">${getText('error_loading')}</p><button onclick="loadEvents()" style="margin-top:12px;padding:8px 20px;background:#FFD700;border:none;border-radius:6px;color:#000;font-weight:bold;cursor:pointer;">${getText('retry_btn')}</button></div>`
+}
+}
+
+function goToDate(){loadEvents()}
+function goToday(){
+let t=new Date;
+document.getElementById('dateInput').value=t.toISOString().split('T')[0];
+loadEvents()
+}
+
+function getRandomFact(){
+let t=[];
+if(currentEvents.events)t.push(...currentEvents.events.map(t=>({...t,type:'event'})));
+if(currentEvents.births)t.push(...currentEvents.births.map(t=>({...t,type:'birth'})));
+if(currentEvents.deaths)t.push(...currentEvents.deaths.map(t=>({...t,type:'death'})));
+if(t.length===0){
+document.getElementById('factText').innerHTML=getText('no_facts');
+return
+}
+let e=t[Math.floor(Math.random()*t.length)],n={event:'🔥',birth:'🎂',death:'🕊️'};
+document.getElementById('factText').innerHTML=(n[e.type]||'📜')+' <span style="color:#FFD700;">'+e.year+'</span> — '+e.text;
+badges.stats.factsUsed=(badges.stats.factsUsed||0)+1;
+localStorage.setItem('historyBadges',JSON.stringify(badges));
+checkBadges()
+}
+
+function generateQuiz(){
+let t=[];
+if(currentEvents.events)t.push(...currentEvents.events.map(t=>({...t,type:'event'})));
+if(currentEvents.births)t.push(...currentEvents.births.map(t=>({...t,type:'birth'})));
+if(currentEvents.deaths)t.push(...currentEvents.deaths.map(t=>({...t,type:'death'})));
+if(t.length<4){
+document.getElementById('quizQuestion').innerHTML=getText('quiz_not_enough');
+document.getElementById('quizOptions').innerHTML='';
+document.getElementById('quizResult').innerHTML='';
+return
+}
+let e=t[Math.floor(Math.random()*t.length)],n=t.filter(t=>t.year!==e.year).sort(()=>Math.random()-.5).slice(0,3);
+while(n.length<3){
+let t=['1776','1865','1941','1969','1492','1789'],o=['Declaration of Independence','Civil War ended','Pearl Harbor attack','Moon landing','Columbus arrived','French Revolution'],a=n.length;
+n.push({year:t[a%t.length],text:o[a%o.length],type:'event'})
+}
+let o=[e,...n].sort(()=>Math.random()-.5);
+window.currentQuiz={correct:e,options:o};
+window.quizAnswered=false;
+document.getElementById('quizQuestion').innerHTML=getText('quiz_question')+' <strong>'+e.year+'</strong>?';
+let optionsContainer=document.getElementById('quizOptions');
+optionsContainer.innerHTML='';
+o.forEach(option=>{
+let btn=document.createElement('button');
+btn.textContent=option.text.substring(0,40)+(option.text.length>40?'...':'');
+btn.onclick=function(){
+if(window.quizAnswered)return;
+window.quizAnswered=true;
+let resultDiv=document.getElementById('quizResult');
+if(option.year===window.currentQuiz.correct.year&&option.text===window.currentQuiz.correct.text){
+btn.classList.add('correct');
+resultDiv.innerHTML=getText('quiz_correct');
+resultDiv.className='quiz-result correct';
+let score=parseInt(localStorage.getItem('quizScore')||'0');
+score++;
+localStorage.setItem('quizScore',score);
+updateQuizStats();
+badges.stats.quizCorrect=(badges.stats.        quizCorrect || 0) + 1;
+        localStorage.setItem('historyBadges', JSON.stringify(badges));
+        checkBadges();
+    } else {
+        btn.classList.add('wrong');
+        resultDiv.innerHTML = getText('quiz_wrong') + ' ' + window.currentQuiz.correct.text;
+        resultDiv.className = 'quiz-result wrong';
+        document.querySelectorAll('#quizOptions button').forEach(b => {
+            if (b.textContent === window.currentQuiz.correct.text.substring(0, 40) || 
+                b.textContent === window.currentQuiz.correct.text.substring(0, 40) + '...') {
+                b.classList.add('correct');
             }
-        };
-        optionsContainer.appendChild(btn);
-    });
-    document.getElementById('quizResult').innerHTML='';
+        });
+    }
+};
+optionsContainer.appendChild(btn);
+});
+document.getElementById('quizResult').innerHTML = '';
 }
 
-function updateQuizStats(){
-    let score=parseInt(localStorage.getItem('quizScore')||'0');
-    document.getElementById('quizStats').innerHTML=getText('quiz_score')+' '+score;
+function updateQuizStats() {
+    let score = parseInt(localStorage.getItem('quizScore') || '0');
+    document.getElementById('quizStats').innerHTML = getText('quiz_score') + ' ' + score;
 }
 
-function shareAll(){
-    let date=getDateFromInput();
-    let text='📜 Today in History - '+formatDate(date)+'\n\n';
-    let count=0;
-    if(currentEvents.events&&currentEvents.events.length>0){
-        text+='🔥 EVENTS:\n';
-        currentEvents.events.forEach(t=>{text+='  '+t.year+': '+t.text+'\n'});
-        count+=currentEvents.events.length;
-        text+='\n';
+function shareAll() {
+    let date = getDateFromInput();
+    let text = '📜 Today in History - ' + formatDate(date) + '\n\n';
+    let count = 0;
+    if (currentEvents.events && currentEvents.events.length > 0) {
+        text += '🔥 EVENTS:\n';
+        currentEvents.events.forEach(t => { text += '  ' + t.year + ': ' + t.text + '\n' });
+        count += currentEvents.events.length;
+        text += '\n';
     }
-    if(currentEvents.births&&currentEvents.births.length>0){
-        text+='🎂 BIRTHS:\n';
-        currentEvents.births.forEach(t=>{text+='  '+t.year+': '+t.text+'\n'});
-        count+=currentEvents.births.length;
-        text+='\n';
+    if (currentEvents.births && currentEvents.births.length > 0) {
+        text += '🎂 BIRTHS:\n';
+        currentEvents.births.forEach(t => { text += '  ' + t.year + ': ' + t.text + '\n' });
+        count += currentEvents.births.length;
+        text += '\n';
     }
-    if(currentEvents.deaths&&currentEvents.deaths.length>0){
-        text+='🕊️ DEATHS:\n';
-        currentEvents.deaths.forEach(t=>{text+='  '+t.year+': '+t.text+'\n'});
-        count+=currentEvents.deaths.length;
-        text+='\n';
+    if (currentEvents.deaths && currentEvents.deaths.length > 0) {
+        text += '🕊️ DEATHS:\n';
+        currentEvents.deaths.forEach(t => { text += '  ' + t.year + ': ' + t.text + '\n' });
+        count += currentEvents.deaths.length;
+        text += '\n';
     }
-    text+='\n📱 via History App • '+count+' events found';
-    badges.stats.shares=(badges.stats.shares||0)+1;
-    localStorage.setItem('historyBadges',JSON.stringify(badges));
+    text += '\n📱 via History App • ' + count + ' events found';
+    badges.stats.shares = (badges.stats.shares || 0) + 1;
+    localStorage.setItem('historyBadges', JSON.stringify(badges));
     checkBadges();
-    if(navigator.share){
-        navigator.share({title:'Today in History',text:text});
-    }else{
-        navigator.clipboard.writeText(text).then(()=>{
+    if (navigator.share) {
+        navigator.share({ title: 'Today in History', text: text });
+    } else {
+        navigator.clipboard.writeText(text).then(() => {
             alert('📋 Copied to clipboard! Share it anywhere!');
-        }).catch(()=>{
-            prompt('Copy this text:',text);
+        }).catch(() => {
+            prompt('Copy this text:', text);
         });
     }
 }
 
-function shareToday(){
-    let date=getDateFromInput();
-    let text='📅 Today in History - '+formatDate(date)+'\n\n';
-    if(currentEvents.events&&currentEvents.events.length>0){
-        text+='🔥 '+currentEvents.events[0].year+': '+currentEvents.events[0].text+'\n';
-        if(currentEvents.events.length>1){
-            text+='... and '+(currentEvents.events.length-1)+' more events\n';
+function shareToday() {
+    let date = getDateFromInput();
+    let text = '📅 Today in History - ' + formatDate(date) + '\n\n';
+    if (currentEvents.events && currentEvents.events.length > 0) {
+        text += '🔥 ' + currentEvents.events[0].year + ': ' + currentEvents.events[0].text + '\n';
+        if (currentEvents.events.length > 1) {
+            text += '... and ' + (currentEvents.events.length - 1) + ' more events\n';
         }
-    }else{
-        text+='No major events found for this day.\n';
+    } else {
+        text += 'No major events found for this day.\n';
     }
-    text+='\n📱 via History App';
-    badges.stats.shares=(badges.stats.shares||0)+1;
-    localStorage.setItem('historyBadges',JSON.stringify(badges));
+    text += '\n📱 via History App';
+    badges.stats.shares = (badges.stats.shares || 0) + 1;
+    localStorage.setItem('historyBadges', JSON.stringify(badges));
     checkBadges();
-    if(navigator.share){
-        navigator.share({title:'Today in History',text:text});
-    }else{
-        navigator.clipboard.writeText(text).then(()=>{
+    if (navigator.share) {
+        navigator.share({ title: 'Today in History', text: text });
+    } else {
+        navigator.clipboard.writeText(text).then(() => {
             alert('📋 Copied to clipboard!');
-        }).catch(()=>{
-            prompt('Copy this text:',text);
+        }).catch(() => {
+            prompt('Copy this text:', text);
         });
     }
 }
 
-document.addEventListener('DOMContentLoaded',async function(){
+document.addEventListener('DOMContentLoaded', async function() {
     await loadTranslations();
-    let savedLang=localStorage.getItem('historyLang')||'en';
-    document.getElementById('langSelect').value=savedLang;
-    currentLang=savedLang;
+    let savedLang = localStorage.getItem('historyLang') || 'en';
+    document.getElementById('langSelect').value = savedLang;
+    currentLang = savedLang;
     updateUI();
-    let today=new Date();
-    document.getElementById('dateInput').value=today.toISOString().split('T')[0];
+    let today = new Date();
+    document.getElementById('dateInput').value = today.toISOString().split('T')[0];
     updateQuizStats();
     generateCalendarData();
-    badges.stats.visits=(badges.stats.visits||0)+1;
-    localStorage.setItem('historyBadges',JSON.stringify(badges));
+    badges.stats.visits = (badges.stats.visits || 0) + 1;
+    localStorage.setItem('historyBadges', JSON.stringify(badges));
     checkBadges();
     loadEvents();
 });
