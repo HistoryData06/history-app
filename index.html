@@ -148,7 +148,7 @@
             background: rgba(255, 215, 0, 0.2);
         }
 
-        /* RANDOM FACT */
+        /* RANDOM FACT & QUIZ SECTION */
         .fact-card {
             background: #0a0a0a;
             border-radius: 12px;
@@ -185,6 +185,67 @@
         }
         .fact-card .fact-btn:hover {
             background: rgba(255, 215, 0, 0.2);
+        }
+
+        /* Quiz Styles */
+        .quiz-container {
+            margin-top: 12px;
+            border-top: 1px solid rgba(255,215,0,0.1);
+            padding-top: 12px;
+        }
+        .quiz-container .quiz-label {
+            color: #FFD700;
+            font-weight: 700;
+            font-size: 0.85em;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .quiz-container .quiz-question {
+            font-size: 0.95em;
+            color: #ffffff;
+            margin-bottom: 8px;
+        }
+        .quiz-container .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .quiz-container .quiz-options button {
+            padding: 8px 10px;
+            background: rgba(255,215,0,0.05);
+            border: 1px solid rgba(255,215,0,0.15);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-family: inherit;
+        }
+        .quiz-container .quiz-options button:hover {
+            background: rgba(255,215,0,0.15);
+        }
+        .quiz-container .quiz-options button.correct {
+            background: rgba(0,255,0,0.2);
+            border-color: #00ff00;
+        }
+        .quiz-container .quiz-options button.wrong {
+            background: rgba(255,0,0,0.2);
+            border-color: #ff0000;
+        }
+        .quiz-container .quiz-result {
+            margin-top: 8px;
+            font-weight: 600;
+            font-size: 0.9em;
+            min-height: 1.5em;
+        }
+        .quiz-container .quiz-result.correct { color: #00ff00; }
+        .quiz-container .quiz-result.wrong { color: #ff6b6b; }
+        .quiz-container .quiz-stats {
+            margin-top: 8px;
+            font-size: 0.8em;
+            color: #FFD700;
+            text-align: center;
         }
 
         /* CARDS */
@@ -391,6 +452,19 @@
             .date-picker input { width: 100%; }
             .date-picker .go-btn { width: 100%; }
             .date-picker .today-btn { width: 100%; }
+            .quiz-container .quiz-options {
+                grid-template-columns: 1fr 1fr;
+            }
+            .quiz-container .quiz-options button {
+                font-size: 0.7em;
+                padding: 6px 8px;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .quiz-container .quiz-options {
+                grid-template-columns: 1fr;
+            }
         }
 
         /* ANIMATIONS */
@@ -446,11 +520,20 @@
             <button class="today-btn" onclick="goToday()">Today</button>
         </div>
 
-        <!-- RANDOM FACT -->
+        <!-- RANDOM FACT & QUIZ SECTION -->
         <div class="fact-card" id="factCard">
             <span class="fact-icon">💡</span>
             <div class="fact-text" id="factText">Click for a random historical fact!</div>
             <button class="fact-btn" onclick="getRandomFact()">🎲 Random Fact</button>
+            
+            <div class="quiz-container" id="quizContainer">
+                <span class="quiz-label">📝 QUIZ TIME</span>
+                <div class="quiz-question" id="quizQuestion">Ready to test your history knowledge?</div>
+                <div class="quiz-options" id="quizOptions"></div>
+                <div class="quiz-result" id="quizResult"></div>
+                <div class="quiz-stats" id="quizStats">🏆 Quiz Score: 0</div>
+                <button class="fact-btn" onclick="generateQuiz()" style="margin-top:8px;">📚 New Quiz</button>
+            </div>
         </div>
 
         <!-- FAVORITES -->
@@ -486,7 +569,7 @@
         <!-- FOOTER -->
         <div class="footer">
             <span class="heart">✦</span> Built with <span class="heart">♥</span> • Wikipedia
-            <br><span style="font-size:0.9em;color:#222;">✨ All features: Search, Favorites, Share, Random Fact ✨</span>
+            <br><span style="font-size:0.9em;color:#222;">✨ All features: Search, Favorites, Share, Quiz, Random Fact ✨</span>
         </div>
     </div>
 
@@ -684,6 +767,9 @@
 
                     content.innerHTML = html;
                     renderFavorites();
+                    
+                    // Generate quiz after events load
+                    setTimeout(generateQuiz, 500);
                 })
                 .catch(err => {
                     content.innerHTML = `
@@ -726,77 +812,80 @@
                 `${emojis[random.type] || '📜'} <span class="fact-year">${random.year}</span> — ${random.text} <span style="color:#666;font-size:0.8em;">(${labels[random.type]})</span>`;
         }
 
-        // ===== SHARE FUNCTIONS =====
-        function shareAll() {
-            const date = getDateFromInput();
-            let text = `📜 Today in History - ${formatDate(date)}\n\n`;
-            let count = 0;
+        // ===== QUIZ FEATURE =====
+        let currentQuiz = null;
+        let quizAnswered = false;
+
+        function generateQuiz() {
+            const allEvents = [];
+            // Collect all events from current view
+            if (currentEvents.events) allEvents.push(...currentEvents.events.map(e => ({...e, type: 'event'})));
+            if (currentEvents.births) allEvents.push(...currentEvents.births.map(e => ({...e, type: 'birth'})));
+            if (currentEvents.deaths) allEvents.push(...currentEvents.deaths.map(e => ({...e, type: 'death'})));
             
-            if (currentEvents.events && currentEvents.events.length > 0) {
-                text += `🔥 EVENTS:\n`;
-                currentEvents.events.forEach(e => text += `  ${e.year}: ${e.text}\n`);
-                count += currentEvents.events.length;
-                text += `\n`;
+            if (allEvents.length < 4) {
+                document.getElementById('quizQuestion').innerHTML = 'Not enough events for a quiz today! 😅';
+                document.getElementById('quizOptions').innerHTML = '';
+                document.getElementById('quizResult').innerHTML = '';
+                return;
             }
-            if (currentEvents.births && currentEvents.births.length > 0) {
-                text += `🎂 BIRTHS:\n`;
-                currentEvents.births.forEach(e => text += `  ${e.year}: ${e.text}\n`);
-                count += currentEvents.births.length;
-                text += `\n`;
-            }
-            if (currentEvents.deaths && currentEvents.deaths.length > 0) {
-                text += `🕊️ DEATHS:\n`;
-                currentEvents.deaths.forEach(e => text += `  ${e.year}: ${e.text}\n`);
-                count += currentEvents.deaths.length;
-                text += `\n`;
-            }
+
+            // Pick a random event as the correct answer
+            const correct = allEvents[Math.floor(Math.random() * allEvents.length)];
             
-            text += `\n📱 via History App • ${count} events found`;
+            // Get 3 wrong answers (different years)
+            const wrongs = allEvents.filter(e => e.year !== correct.year);
+            const shuffledWrongs = wrongs.sort(() => Math.random() - 0.5).slice(0, 3);
             
-            if (navigator.share) {
-                navigator.share({ title: 'Today in History', text: text });
-            } else {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert('📋 Copied to clipboard! Share it anywhere!');
-                }).catch(() => {
-                    prompt('Copy this text:', text);
+            // If we don't have enough wrong answers, use sample data
+            while (shuffledWrongs.length < 3) {
+                const sampleYears = ['1776', '1865', '1941', '1969', '1492', '1789'];
+                const sampleTexts = ['Declaration of Independence', 'Civil War ended', 'Pearl Harbor attack', 'Moon landing', 'Columbus arrived', 'French Revolution'];
+                const idx = shuffledWrongs.length;
+                shuffledWrongs.push({
+                    year: sampleYears[idx % sampleYears.length],
+                    text: sampleTexts[idx % sampleTexts.length],
+                    type: 'event'
                 });
             }
-        }
-
-        function shareToday() {
+            
+            // Combine and shuffle
+            const options = [correct, ...shuffledWrongs].sort(() => Math.random() - 0.5);
+            
+            currentQuiz = {
+                correct: correct,
+                options: options
+            };
+            quizAnswered = false;
+            
+            // Display the question
             const date = getDateFromInput();
-            let text = `📅 Today in History - ${formatDate(date)}\n\n`;
+            const dateStr = formatDate(date);
+            document.getElementById('quizQuestion').innerHTML = 
+                `<span style="color:#FFD700;">❓ What happened in <strong>${correct.year}</strong>?</span>`;
             
-            if (currentEvents.events && currentEvents.events.length > 0) {
-                const first = currentEvents.events[0];
-                text += `🔥 ${first.year}: ${first.text}\n`;
-                if (currentEvents.events.length > 1) {
-                    text += `... and ${currentEvents.events.length - 1} more events\n`;
-                }
-            } else {
-                text += `No major events found for this day.\n`;
-            }
-            
-            text += `\n📱 via History App`;
-            
-            if (navigator.share) {
-                navigator.share({ title: 'Today in History', text: text });
-            } else {
-                navigator.clipboard.writeText(text).then(() => {
-                    alert('📋 Copied to clipboard!');
-                }).catch(() => {
-                    prompt('Copy this text:', text);
-                });
-            }
-        }
-
-        // ===== SET DEFAULT DATE =====
-        document.addEventListener('DOMContentLoaded', function() {
-            const today = new Date();
-            document.getElementById('dateInput').value = formatDateInput(today);
-            loadEvents();
-        });
-    </script>
-</body>
-</html>
+            // Display options
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            options.forEach((option, index) => {
+                const btn = document.createElement('button');
+                btn.textContent = `${option.text.substring(0, 40)}${option.text.length > 40 ? '...' : ''}`;
+                btn.onclick = () => {
+                    if (quizAnswered) return;
+                    quizAnswered = true;
+                    const resultDiv = document.getElementById('quizResult');
+                    
+                    // Check if correct
+                    if (option.year === currentQuiz.correct.year && option.text === currentQuiz.correct.text) {
+                        btn.classList.add('correct');
+                        resultDiv.innerHTML = '✅ Correct! Well done! 🎉';
+                        resultDiv.className = 'quiz-result correct';
+                        // Save score
+                        let score = parseInt(localStorage.getItem('quizScore') || '0');
+                        score++;
+                        localStorage.setItem('quizScore', score);
+                        updateQuizStats();
+                    } else {
+                        btn.classList.add('wrong');
+                        resultDiv.innerHTML = `❌ Wrong! The correct answer was: ${currentQuiz.correct.text}`;
+                        resultDiv.className = 'quiz
