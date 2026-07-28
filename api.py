@@ -327,16 +327,13 @@ LANGUAGES = {
 }
 
 # ===== NOTIFICATION SYSTEM =====
-# Store subscriptions (in memory - would use database for production)
 subscriptions = {}
 
 def send_daily_notification():
-    """Send daily notification to all subscribed users"""
     today = datetime.now()
     month = today.month
     day = today.day
     
-    # Get today's events
     events_list = []
     try:
         url = f"https://api.wikipedia.org/api/rest_v1/feed/onthisday/events/{month}/{day}"
@@ -357,17 +354,14 @@ def send_daily_notification():
             {'year': '1976', 'text': 'Tangshan earthquake'}
         ]
     
-    # Format notification message
     message = f"📜 Today in History ({today.strftime('%B %d')})\n\n"
     for e in events_list[:3]:
         message += f"• {e['year']}: {e['text']}\n"
     message += f"\n📱 Open app for more: {os.environ.get('APP_URL', 'https://history-app-z99b.onrender.com')}"
     
-    # In production, this would send push notifications via a service
     print(f"📨 NOTIFICATION: {message}")
     return message
 
-# Schedule daily notification at 8:00 AM
 scheduler = BackgroundScheduler()
 scheduler.add_job(func=send_daily_notification, trigger=CronTrigger(hour=8, minute=0))
 scheduler.start()
@@ -375,17 +369,14 @@ scheduler.start()
 # ===== ROUTES =====
 @app.route('/')
 def index():
-    """Serve the main page from templates/index.html"""
     return render_template('index.html')
 
 @app.route('/api/languages')
 def get_languages():
-    """Return the language dictionary for the frontend"""
     return jsonify(LANGUAGES)
 
 @app.route('/api/events')
 def get_events():
-    """Get historical events for a specific date"""
     month = request.args.get('month', type=int)
     day = request.args.get('day', type=int)
     
@@ -457,44 +448,88 @@ def get_events():
         'deaths': deaths_list
     })
 
+# ===== NEW: ARTICLE ROUTE =====
+@app.route('/api/article')
+def get_article():
+    """Get full Wikipedia article content"""
+    title = request.args.get('title', '')
+    if not title:
+        return jsonify({'error': 'No title provided'}), 400
+    
+    try:
+        # Search for the article
+        search_url = f"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={title}&format=json"
+        search_resp = requests.get(search_url, timeout=5)
+        
+        if search_resp.status_code != 200:
+            return jsonify({'error': 'Search failed'}), 500
+            
+        search_data = search_resp.json()
+        if not search_data.get('query', {}).get('search'):
+            return jsonify({'error': 'No article found'}), 404
+            
+        # Get the first result's title
+        page_title = search_data['query']['search'][0]['title']
+        
+        # Get the page summary (extract)
+        summary_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{page_title}"
+        summary_resp = requests.get(summary_url, timeout=5)
+        summary_data = summary_resp.json() if summary_resp.status_code == 200 else {}
+        
+        # Get the full content
+        content_url = f"https://en.wikipedia.org/w/api.php?action=parse&page={page_title}&format=json&prop=text"
+        content_resp = requests.get(content_url, timeout=5)
+        content_data = content_resp.json() if content_resp.status_code == 200 else {}
+        
+        # Extract text from HTML content
+        raw_html = content_data.get('parse', {}).get('text', {}).get('*', '')
+        clean_text = re.sub(r'<[^>]+>', ' ', raw_html)
+        clean_text = re.sub(r'\s+', ' ', clean_text).strip()
+        
+        # Get the first 1500 characters as preview
+        preview = clean_text[:1500] + '...' if len(clean_text) > 1500 else clean_text
+        
+        # If no extract from summary, use preview
+        extract = summary_data.get('extract', preview)
+        
+        return jsonify({
+            'title': page_title,
+            'extract': extract,
+            'full_text': preview,
+            'url': f"https://en.wikipedia.org/wiki/{page_title.replace(' ', '_')}",
+            'thumbnail': summary_data.get('thumbnail', {}).get('source', '')
+        })
+        
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/notification/subscribe', methods=['POST'])
 def subscribe_notification():
-    """Subscribe a user to daily notifications"""
     data = request.json
     user_id = data.get('user_id', 'anonymous')
     time = data.get('time', '08:00')
-    
     subscriptions[user_id] = {'time': time, 'active': True}
     return jsonify({'status': 'subscribed', 'message': 'You will receive daily notifications!'})
 
 @app.route('/api/notification/unsubscribe', methods=['POST'])
 def unsubscribe_notification():
-    """Unsubscribe a user from daily notifications"""
     data = request.json
     user_id = data.get('user_id', 'anonymous')
-    
     if user_id in subscriptions:
         subscriptions[user_id]['active'] = False
-    
     return jsonify({'status': 'unsubscribed', 'message': 'You have unsubscribed from notifications.'})
 
 @app.route('/api/notification/status')
 def notification_status():
-    """Get notification status for a user"""
     user_id = request.args.get('user_id', 'anonymous')
     is_active = user_id in subscriptions and subscriptions[user_id].get('active', False)
     time = subscriptions.get(user_id, {}).get('time', '08:00') if is_active else None
-    
-    return jsonify({
-        'active': is_active,
-        'time': time
-    })
+    return jsonify({'active': is_active, 'time': time})
 
 @app.route('/api/health')
 def health():
     return jsonify({'status': 'ok', 'message': 'History API is running!'})
 
-# ===== START SERVER =====
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
