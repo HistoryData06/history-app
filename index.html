@@ -509,7 +509,7 @@
             <span class="header-icon">📜</span>
             <h1>Today in History</h1>
             <div class="subtitle">✦ On This Day ✦</div>
-            <div class="date" id="headerDate">{{ date_str }}</div>
+            <div class="date" id="headerDate">Loading...</div>
         </div>
 
         <!-- DATE PICKER -->
@@ -605,7 +605,6 @@
         }
 
         function toggleFavorite(year, text, type) {
-            const key = year + '|' + text;
             const index = favorites.findIndex(f => f.year === year && f.text === text);
             if (index > -1) {
                 favorites.splice(index, 1);
@@ -614,7 +613,7 @@
             }
             localStorage.setItem('historyFavorites', JSON.stringify(favorites));
             renderFavorites();
-            loadEvents(); // Refresh to show updated star states
+            loadEvents();
         }
 
         // ===== RENDER FAVORITES =====
@@ -795,7 +794,6 @@
         // ===== RANDOM FACT =====
         function getRandomFact() {
             const allEvents = [];
-            // Collect all events from current view
             if (currentEvents.events) allEvents.push(...currentEvents.events.map(e => ({...e, type: 'event'})));
             if (currentEvents.births) allEvents.push(...currentEvents.births.map(e => ({...e, type: 'birth'})));
             if (currentEvents.deaths) allEvents.push(...currentEvents.deaths.map(e => ({...e, type: 'death'})));
@@ -818,7 +816,6 @@
 
         function generateQuiz() {
             const allEvents = [];
-            // Collect all events from current view
             if (currentEvents.events) allEvents.push(...currentEvents.events.map(e => ({...e, type: 'event'})));
             if (currentEvents.births) allEvents.push(...currentEvents.births.map(e => ({...e, type: 'birth'})));
             if (currentEvents.deaths) allEvents.push(...currentEvents.deaths.map(e => ({...e, type: 'death'})));
@@ -830,14 +827,10 @@
                 return;
             }
 
-            // Pick a random event as the correct answer
             const correct = allEvents[Math.floor(Math.random() * allEvents.length)];
-            
-            // Get 3 wrong answers (different years)
             const wrongs = allEvents.filter(e => e.year !== correct.year);
             const shuffledWrongs = wrongs.sort(() => Math.random() - 0.5).slice(0, 3);
             
-            // If we don't have enough wrong answers, use sample data
             while (shuffledWrongs.length < 3) {
                 const sampleYears = ['1776', '1865', '1941', '1969', '1492', '1789'];
                 const sampleTexts = ['Declaration of Independence', 'Civil War ended', 'Pearl Harbor attack', 'Moon landing', 'Columbus arrived', 'French Revolution'];
@@ -849,43 +842,49 @@
                 });
             }
             
-            // Combine and shuffle
             const options = [correct, ...shuffledWrongs].sort(() => Math.random() - 0.5);
-            
-            currentQuiz = {
-                correct: correct,
-                options: options
-            };
+            currentQuiz = { correct, options };
             quizAnswered = false;
             
-            // Display the question
-            const date = getDateFromInput();
-            const dateStr = formatDate(date);
             document.getElementById('quizQuestion').innerHTML = 
                 `<span style="color:#FFD700;">❓ What happened in <strong>${correct.year}</strong>?</span>`;
             
-            // Display options
             const optionsContainer = document.getElementById('quizOptions');
             optionsContainer.innerHTML = '';
-            options.forEach((option, index) => {
+            options.forEach((option) => {
                 const btn = document.createElement('button');
                 btn.textContent = `${option.text.substring(0, 40)}${option.text.length > 40 ? '...' : ''}`;
-                btn.onclick = () => {
+                btn.onclick = function() {
                     if (quizAnswered) return;
                     quizAnswered = true;
                     const resultDiv = document.getElementById('quizResult');
                     
-                    // Check if correct
                     if (option.year === currentQuiz.correct.year && option.text === currentQuiz.correct.text) {
                         btn.classList.add('correct');
                         resultDiv.innerHTML = '✅ Correct! Well done! 🎉';
                         resultDiv.className = 'quiz-result correct';
-                        // Save score
                         let score = parseInt(localStorage.getItem('quizScore') || '0');
                         score++;
                         localStorage.setItem('quizScore', score);
                         updateQuizStats();
                     } else {
                         btn.classList.add('wrong');
-                        resultDiv.innerHTML = `❌ Wrong! The correct answer was: ${currentQuiz.correct.text}`;
-                        resultDiv.className = 'quiz
+                        resultDiv.innerHTML = `❌ Wrong! Correct: ${currentQuiz.correct.text}`;
+                        resultDiv.className = 'quiz-result wrong';
+                        document.querySelectorAll('#quizOptions button').forEach(b => {
+                            if (b.textContent === currentQuiz.correct.text.substring(0, 40) || 
+                                b.textContent === currentQuiz.correct.text.substring(0, 40) + '...') {
+                                b.classList.add('correct');
+                            }
+                        });
+                    }
+                };
+                optionsContainer.appendChild(btn);
+            });
+            
+            document.getElementById('quizResult').innerHTML = '';
+        }
+
+        function updateQuizStats() {
+            const score = parseInt(localStorage.getItem('quizScore') || '0');
+            document.getElementById('quizStats').
