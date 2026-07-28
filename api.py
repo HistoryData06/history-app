@@ -474,48 +474,70 @@ def health():
     return jsonify({'status': 'ok', 'message': 'History API is running!'})# ===== ARTICLE ROUTE =====
 @app.route('/api/article')
 def get_article():
-    """Get article content using multiple reliable sources"""
+    """Get article about a historical event using AI"""
     query = request.args.get('title', '')
     if not query:
         return jsonify({'error': 'No title provided'}), 400
     
-    # Extract year from the event
+    # Extract year
     year_match = re.search(r'\b(\d{4})\b', query)
     year = year_match.group(1) if year_match else None
     
-    # ===== SOURCE 1: On This Day API (Most Reliable) =====
+    # ===== SOURCE 1: Try DeepSeek AI =====
     try:
-        # Get today's date
-        today = datetime.now()
-        month = today.month
-        day = today.day
+        # Get API key from environment
+        deepseek_key = os.environ.get('sk-2d594d1ee9d44f5d89ba5e49427097db')
         
-        # Try to find the event in the On This Day API
-        url = f"https://onthisday.salatart.com/events?day={day}&month={month}"
-        resp = requests.get(url, timeout=5)
-        
-        if resp.status_code == 200:
-            data = resp.json()
-            events = data.get('data', [])
+        if deepseek_key:
+            url = "https://api.deepseek.com/v1/chat/completions"
+            headers = {
+                "Authorization": f"Bearer {deepseek_key}",
+                "Content-Type": "application/json"
+            }
             
-            # Search for events matching the year
-            for event in events:
-                event_year = event.get('year')
-                if event_year and str(event_year) == year:
-                    # Found a matching event!
-                    event_text = event.get('text', '')
+            # Clean the query for better AI results
+            clean_query = re.sub(r'[^\w\s]', '', query)
+            clean_query = ' '.join(clean_query.split())
+            
+            prompt = f"""Write a short, engaging article about {clean_query} for a "Today in History" mobile app.
+
+The article should:
+- Be 100-150 words long
+- Include key historical facts
+- Be written in a clear, engaging style
+- End with an interesting fact
+
+Write the article in English:"""
+
+            data = {
+                "model": "deepseek-chat",
+                "messages": [
+                    {"role": "system", "content": "You are a helpful historian writing engaging articles for a mobile app."},
+                    {"role": "user", "content": prompt}
+                ],
+                "temperature": 0.7,
+                "max_tokens": 400
+            }
+            
+            response = requests.post(url, headers=headers, json=data, timeout=10)
+            
+            if response.status_code == 200:
+                result = response.json()
+                article = result.get('choices', [{}])[0].get('message', {}).get('content', '')
+                
+                if article:
                     return jsonify({
-                        'title': f"{event_year} - {event_text[:50]}...",
-                        'extract': f"📅 **On this day in {event_year}:**\n\n{event_text}\n\n📖 Source: On This Day API",
-                        'full_text': event_text,
-                        'url': f"https://en.wikipedia.org/wiki/{event_year}",
+                        'title': f"📜 {clean_query}",
+                        'extract': article,
+                        'full_text': article,
+                        'url': '',
                         'thumbnail': '',
-                        'source': 'onthisday_api'
+                        'source': 'deepseek_ai'
                     })
-    except:
-        pass
+    except Exception as e:
+        print(f"DeepSeek AI error: {e}")
     
-    # ===== SOURCE 2: Wikipedia Year Article (Fallback) =====
+    # ===== SOURCE 2: Fallback to Wikipedia Year =====
     if year:
         try:
             page_title = year
@@ -526,7 +548,6 @@ def get_article():
                 summary_data = summary_resp.json()
                 extract = summary_data.get('extract', '')
                 
-                # Try to find the specific event in the year article
                 keywords = query.replace(str(year), '').strip().split()
                 matched_sentence = ''
                 
@@ -556,21 +577,20 @@ def get_article():
         except:
             pass
     
-    # ===== SOURCE 3: Custom Fallback (Always Works) =====
+    # ===== SOURCE 3: Final Fallback =====
     if year:
         return jsonify({
             'title': f'About {year}',
-            'extract': f"📜 **{query}**\n\n🔗 Read more on Wikipedia: https://en.wikipedia.org/wiki/{year}\n\n💡 This event happened in {year}. For more details, visit the link above.",
+            'extract': f"📜 **{query}**\n\n🔗 Read more: https://en.wikipedia.org/wiki/{year}\n\n💡 This event happened in {year}. Click the link above for more details.",
             'full_text': query,
             'url': f'https://en.wikipedia.org/wiki/{year}',
             'thumbnail': '',
             'source': 'fallback'
         })
     
-    # ===== SOURCE 4: Final Fallback =====
     return jsonify({
         'title': 'Historical Event',
-        'extract': f"📜 **{query}**\n\n💡 No specific article found. Try searching on Wikipedia:\nhttps://en.wikipedia.org/w/index.php?search={query.replace(' ', '+')}",
+        'extract': f"📜 **{query}**\n\n💡 Try searching on Wikipedia:\nhttps://en.wikipedia.org/w/index.php?search={query.replace(' ', '+')}",
         'full_text': query,
         'url': f"https://en.wikipedia.org/w/index.php?search={query.replace(' ', '+')}",
         'thumbnail': '',
