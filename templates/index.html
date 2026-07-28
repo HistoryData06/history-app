@@ -71,7 +71,6 @@
             font-size: 1.4em;
         }
 
-        /* ===== CALENDAR ===== */
         .calendar-container {
             background: #0a0a0a;
             border-radius: 12px;
@@ -207,7 +206,6 @@
             background: #555555;
         }
 
-        /* ===== VIEW TOGGLE ===== */
         .view-toggle {
             display: flex;
             gap: 10px;
@@ -234,7 +232,6 @@
             background: rgba(255, 215, 0, 0.1);
         }
 
-        /* ===== DATE PICKER ===== */
         .date-picker {
             background: #0a0a0a;
             border-radius: 12px;
@@ -672,9 +669,6 @@
             document.getElementById('langSelect').value = lang;
             updateUI();
             loadEvents();
-            if (currentView === 'calendar') {
-                renderCalendar(calendarMonth, calendarYear);
-            }
         }
 
         function getText(key) {
@@ -764,7 +758,6 @@
                 grid.appendChild(div);
             });
             
-            // Previous month days
             const startDay = firstDay === 0 ? 6 : firstDay - 1;
             for (let i = startDay - 1; i >= 0; i--) {
                 const day = daysInPrevMonth - i;
@@ -774,7 +767,6 @@
                 grid.appendChild(div);
             }
             
-            // Current month days
             const selectedDate = getDateFromInput();
             for (let i = 1; i <= daysInMonth; i++) {
                 const div = document.createElement('div');
@@ -783,17 +775,14 @@
                 
                 const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
                 
-                // Check if this date has events (using sample data)
                 if (calendarData[dateKey]) {
                     div.classList.add('has-events');
                 }
                 
-                // Check if today
                 if (year === currentYear && month === currentMonth && i === today.getDate()) {
                     div.classList.add('today');
                 }
                 
-                // Check if selected
                 if (year === selectedDate.getFullYear() && month === selectedDate.getMonth() && i === selectedDate.getDate()) {
                     div.classList.add('selected');
                 }
@@ -809,7 +798,6 @@
                 grid.appendChild(div);
             }
             
-            // Next month days
             const totalCells = startDay + daysInMonth;
             const remainingCells = 42 - totalCells;
             for (let i = 1; i <= remainingCells; i++) {
@@ -844,7 +832,6 @@
             renderCalendar(calendarMonth, calendarYear);
         }
 
-        // ===== Simple Calendar Data (Sample - NO API CALLS) =====
         function generateCalendarData() {
             const today = new Date();
             const year = today.getFullYear();
@@ -853,7 +840,6 @@
             
             calendarData = {};
             
-            // Sample days with events (some random dates)
             const sampleDates = [1, 3, 5, 8, 12, 15, 18, 20, 22, 25, 27, 28, 30];
             sampleDates.forEach(day => {
                 if (day <= daysInMonth) {
@@ -862,11 +848,9 @@
                 }
             });
             
-            // Always mark today
             const todayKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
             calendarData[todayKey] = true;
             
-            // Add some previous month days
             const prevMonth = month === 0 ? 11 : month - 1;
             const prevMonthYear = month === 0 ? year - 1 : year;
             const prevMonthDays = new Date(prevMonthYear, prevMonth + 1, 0).getDate();
@@ -877,7 +861,6 @@
                 }
             });
             
-            // Add some next month days
             const nextMonth = month === 11 ? 0 : month + 1;
             const nextMonthYear = month === 11 ? year + 1 : year;
             [2, 6, 9, 13, 16, 21, 24].forEach(day => {
@@ -922,4 +905,24 @@
             const count = document.getElementById('favCount');
             
             if (favorites.length === 0) {
-                card.style
+                card.style.display = 'none';
+                return;
+            }
+            card.style.display = 'block';
+            count.textContent = favorites.length;
+            
+            let html = '';
+            favorites.forEach(f => {
+                html += `
+                    <div class="event-item">
+                        <span class="event-year">${f.year}</span>
+                        <span class="event-text">${f.text}</span>
+                        <button class="event-remove-btn" onclick="removeFavorite('${f.year}', '${f.text.replace(/'/g, "\\'")}')">✕</button>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        function removeFavorite(year, text) {
+            favorites = favorites.filter(f => !(f.year
