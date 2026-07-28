@@ -5,6 +5,9 @@ import re
 from datetime import datetime
 import random
 import os
+import json
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.cron import CronTrigger
 
 app = Flask(__name__)
 CORS(app)
@@ -323,6 +326,52 @@ LANGUAGES = {
     }
 }
 
+# ===== NOTIFICATION SYSTEM =====
+# Store subscriptions (in memory - would use database for production)
+subscriptions = {}
+
+def send_daily_notification():
+    """Send daily notification to all subscribed users"""
+    today = datetime.now()
+    month = today.month
+    day = today.day
+    
+    # Get today's events
+    events_list = []
+    try:
+        url = f"https://api.wikipedia.org/api/rest_v1/feed/onthisday/events/{month}/{day}"
+        r = requests.get(url, timeout=5)
+        if r.status_code == 200:
+            for e in r.json().get('events', [])[:3]:
+                events_list.append({
+                    'year': str(e.get('year', '?')),
+                    'text': re.sub(r'<[^>]+>', '', e.get('text', ''))[:100]
+                })
+    except:
+        pass
+    
+    if not events_list:
+        events_list = [
+            {'year': '1914', 'text': 'World War I began'},
+            {'year': '1945', 'text': 'Empire State Building crash'},
+            {'year': '1976', 'text': 'Tangshan earthquake'}
+        ]
+    
+    # Format notification message
+    message = f"📜 Today in History ({today.strftime('%B %d')})\n\n"
+    for e in events_list[:3]:
+        message += f"• {e['year']}: {e['text']}\n"
+    message += f"\n📱 Open app for more: {os.environ.get('APP_URL', 'https://history-app-z99b.onrender.com')}"
+    
+    # In production, this would send push notifications via a service
+    print(f"📨 NOTIFICATION: {message}")
+    return message
+
+# Schedule daily notification at 8:00 AM
+scheduler = BackgroundScheduler()
+scheduler.add_job(func=send_daily_notification, trigger=CronTrigger(hour=8, minute=0))
+scheduler.start()
+
 # ===== ROUTES =====
 @app.route('/')
 def index():
@@ -347,7 +396,6 @@ def get_events():
     
     events_list, births_list, deaths_list = [], [], []
     
-    # Try Wikipedia
     try:
         url = f"https://api.wikipedia.org/api/rest_v1/feed/onthisday/events/{month}/{day}"
         r = requests.get(url, timeout=5)
@@ -384,7 +432,6 @@ def get_events():
     except:
         pass
     
-    # Use sample data if Wikipedia failed
     if not events_list and not births_list and not deaths_list:
         events_list = [
             {'year': '1914', 'text': 'World War I began when Austria-Hungary declared war on Serbia'},
@@ -408,6 +455,39 @@ def get_events():
         'events': events_list,
         'births': births_list,
         'deaths': deaths_list
+    })
+
+@app.route('/api/notification/subscribe', methods=['POST'])
+def subscribe_notification():
+    """Subscribe a user to daily notifications"""
+    data = request.json
+    user_id = data.get('user_id', 'anonymous')
+    time = data.get('time', '08:00')
+    
+    subscriptions[user_id] = {'time': time, 'active': True}
+    return jsonify({'status': 'subscribed', 'message': 'You will receive daily notifications!'})
+
+@app.route('/api/notification/unsubscribe', methods=['POST'])
+def unsubscribe_notification():
+    """Unsubscribe a user from daily notifications"""
+    data = request.json
+    user_id = data.get('user_id', 'anonymous')
+    
+    if user_id in subscriptions:
+        subscriptions[user_id]['active'] = False
+    
+    return jsonify({'status': 'unsubscribed', 'message': 'You have unsubscribed from notifications.'})
+
+@app.route('/api/notification/status')
+def notification_status():
+    """Get notification status for a user"""
+    user_id = request.args.get('user_id', 'anonymous')
+    is_active = user_id in subscriptions and subscriptions[user_id].get('active', False)
+    time = subscriptions.get(user_id, {}).get('time', '08:00') if is_active else None
+    
+    return jsonify({
+        'active': is_active,
+        'time': time
     })
 
 @app.route('/api/health')
