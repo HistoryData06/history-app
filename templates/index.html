@@ -71,6 +71,32 @@
             font-size: 1.4em;
         }
 
+        .view-toggle {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 22px;
+        }
+        .view-toggle button {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 215, 0, 0.05);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 8px;
+            color: #888888;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        .view-toggle button.active {
+            background: rgba(255, 215, 0, 0.15);
+            border-color: #FFD700;
+            color: #FFD700;
+        }
+        .view-toggle button:hover {
+            background: rgba(255, 215, 0, 0.1);
+        }
+
         .calendar-container {
             background: #0a0a0a;
             border-radius: 12px;
@@ -178,9 +204,6 @@
         .calendar-grid .day-cell.other-month {
             color: #333333;
         }
-        .calendar-grid .day-cell.other-month.has-events::after {
-            background: #555555;
-        }
 
         .calendar-legend {
             display: flex;
@@ -204,32 +227,6 @@
         }
         .calendar-legend .dot.gray {
             background: #555555;
-        }
-
-        .view-toggle {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 22px;
-        }
-        .view-toggle button {
-            flex: 1;
-            padding: 12px;
-            background: rgba(255, 215, 0, 0.05);
-            border: 1px solid rgba(255, 215, 0, 0.15);
-            border-radius: 8px;
-            color: #888888;
-            font-size: 0.85em;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-weight: 600;
-        }
-        .view-toggle button.active {
-            background: rgba(255, 215, 0, 0.15);
-            border-color: #FFD700;
-            color: #FFD700;
-        }
-        .view-toggle button:hover {
-            background: rgba(255, 215, 0, 0.1);
         }
 
         .date-picker {
@@ -522,36 +519,20 @@
             .header h1 { font-size: 1.6em; }
             .date-picker { flex-direction: column; }
             .date-picker input { width: 100%; }
-            .quiz-container .quiz-options {
-                grid-template-columns: 1fr 1fr;
-            }
+            .quiz-container .quiz-options { grid-template-columns: 1fr 1fr; }
             .lang-selector { flex-direction: column; align-items: stretch; }
-            .calendar-grid .day-cell {
-                padding: 6px 0;
-                font-size: 0.8em;
-            }
-            .calendar-header .month-year {
-                font-size: 0.9em;
-            }
-            .calendar-header .nav-btn {
-                padding: 6px 12px;
-                font-size: 0.8em;
-            }
+            .calendar-grid .day-cell { padding: 6px 0; font-size: 0.8em; }
+            .calendar-header .month-year { font-size: 0.9em; }
+            .calendar-header .nav-btn { padding: 6px 12px; font-size: 0.8em; }
         }
         @media (max-width: 380px) {
-            .quiz-container .quiz-options {
-                grid-template-columns: 1fr;
-            }
-            .calendar-grid .day-cell {
-                padding: 4px 0;
-                font-size: 0.7em;
-            }
+            .quiz-container .quiz-options { grid-template-columns: 1fr; }
+            .calendar-grid .day-cell { padding: 4px 0; font-size: 0.7em; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- LANGUAGE SELECTOR -->
         <div class="lang-selector">
             <span class="lang-flag">🌍</span>
             <label for="langSelect">Language</label>
@@ -574,13 +555,11 @@
             <div class="date" id="headerDate">Loading...</div>
         </div>
 
-        <!-- VIEW TOGGLE -->
         <div class="view-toggle">
             <button id="listViewBtn" class="active" onclick="setView('list')">📋 List</button>
             <button id="calendarViewBtn" onclick="setView('calendar')">📅 Calendar</button>
         </div>
 
-        <!-- CALENDAR VIEW -->
         <div id="calendarView" style="display:none;">
             <div class="calendar-container">
                 <div class="calendar-header">
@@ -597,7 +576,6 @@
             </div>
         </div>
 
-        <!-- DATE PICKER (List View) -->
         <div id="listView">
             <div class="date-picker">
                 <label id="dateLabel">📅 Date</label>
@@ -610,7 +588,6 @@
         <div class="fact-card">
             <div class="fact-text" id="factText">Click for a random fact!</div>
             <button class="fact-btn" id="randomBtn" onclick="getRandomFact()">🎲 Random Fact</button>
-            
             <div class="quiz-container">
                 <span class="quiz-label" id="quizLabel">📝 QUIZ TIME</span>
                 <div class="quiz-question" id="quizQuestion">Ready to test your history knowledge?</div>
@@ -647,19 +624,39 @@
     </div>
 
     <script>
-        // ===== LANGUAGE SUPPORT =====
         let currentLang = localStorage.getItem('historyLang') || 'en';
         let translations = {};
+        let currentEvents = [];
+        let favorites = JSON.parse(localStorage.getItem('historyFavorites') || '[]');
+        let currentView = 'list';
+        let calendarMonth = new Date().getMonth();
+        let calendarYear = new Date().getFullYear();
+        let calendarData = {};
+
+        function generateCalendarData() {
+            const today = new Date();
+            const year = today.getFullYear();
+            const month = today.getMonth();
+            const daysInMonth = new Date(year, month + 1, 0).getDate();
+            calendarData = {};
+            const sampleDates = [1, 3, 5, 8, 12, 15, 18, 20, 22, 25, 27, 28, 30];
+            sampleDates.forEach(day => {
+                if (day <= daysInMonth) {
+                    const dateKey = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(day).padStart(2, '0');
+                    calendarData[dateKey] = true;
+                }
+            });
+            const todayKey = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+            calendarData[todayKey] = true;
+        }
 
         async function loadTranslations() {
             try {
                 const response = await fetch('/api/languages');
                 const data = await response.json();
                 translations = data;
-                return data;
             } catch (e) {
                 console.error('Error loading translations:', e);
-                return {};
             }
         }
 
@@ -672,12 +669,8 @@
         }
 
         function getText(key) {
-            if (translations[currentLang] && translations[currentLang][key]) {
-                return translations[currentLang][key];
-            }
-            if (translations['en'] && translations['en'][key]) {
-                return translations['en'][key];
-            }
+            if (translations[currentLang] && translations[currentLang][key]) return translations[currentLang][key];
+            if (translations['en'] && translations['en'][key]) return translations['en'][key];
             return key;
         }
 
@@ -695,191 +688,91 @@
             document.getElementById('refreshBtn').textContent = getText('refresh_btn');
             document.getElementById('footerText').textContent = getText('footer');
             document.getElementById('loadingText').textContent = getText('loading');
-            
-            const qQuestion = document.getElementById('quizQuestion');
-            if (qQuestion.textContent === 'Ready to test your history knowledge?' || 
-                qQuestion.textContent === 'Spremni testirati svoje povijesno znanje?' ||
-                qQuestion.textContent === '¿Listo para probar tus conocimientos de historia?' ||
-                qQuestion.textContent === 'Bereit, dein Geschichtswissen zu testen?' ||
-                qQuestion.textContent === 'Prêt à tester vos connaissances en histoire ?' ||
-                qQuestion.textContent === 'Pronto a testare le tue conoscenze storiche?' ||
-                qQuestion.textContent === 'Pronto para testar seus conhecimentos históricos?' ||
-                qQuestion.textContent === 'Готовы проверить свои знания истории?' ||
-                qQuestion.textContent === '歴史の知識を試す準備はできましたか？' ||
-                qQuestion.textContent === '准备好测试你的历史知识了吗？') {
-                qQuestion.textContent = getText('quiz_ready');
-            }
         }
 
-        // ===== STATE =====
-        let currentEvents = [];
-        let currentQuiz = null;
-        let quizAnswered = false;
-        let favorites = JSON.parse(localStorage.getItem('historyFavorites') || '[]');
-        let currentView = 'list';
-        let calendarMonth = new Date().getMonth();
-        let calendarYear = new Date().getFullYear();
-        let calendarData = {};
-
-        // ===== VIEW TOGGLE =====
         function setView(view) {
             currentView = view;
             document.getElementById('listViewBtn').className = view === 'list' ? 'active' : '';
             document.getElementById('calendarViewBtn').className = view === 'calendar' ? 'active' : '';
             document.getElementById('listView').style.display = view === 'list' ? 'block' : 'none';
             document.getElementById('calendarView').style.display = view === 'calendar' ? 'block' : 'none';
-            
-            if (view === 'calendar') {
-                renderCalendar(calendarMonth, calendarYear);
-            }
+            if (view === 'calendar') renderCalendar(calendarMonth, calendarYear);
         }
 
-        // ===== CALENDAR =====
         function renderCalendar(month, year) {
             const today = new Date();
-            const currentMonth = today.getMonth();
-            const currentYear = today.getFullYear();
-            
             const firstDay = new Date(year, month, 1).getDay();
             const daysInMonth = new Date(year, month + 1, 0).getDate();
             const daysInPrevMonth = new Date(year, month, 0).getDate();
-            
             const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
-            document.getElementById('calendarTitle').textContent = `${monthNames[month]} ${year}`;
+            document.getElementById('calendarTitle').textContent = monthNames[month] + ' ' + year;
             
             const grid = document.getElementById('calendarGrid');
             grid.innerHTML = '';
-            
-            const dayNames = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-            dayNames.forEach(name => {
-                const div = document.createElement('div');
-                div.className = 'day-name';
-                div.textContent = name;
-                grid.appendChild(div);
+            ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].forEach(name => {
+                let d = document.createElement('div');
+                d.className = 'day-name';
+                d.textContent = name;
+                grid.appendChild(d);
             });
-            
-            const startDay = firstDay === 0 ? 6 : firstDay - 1;
+
+            let startDay = firstDay === 0 ? 6 : firstDay - 1;
             for (let i = startDay - 1; i >= 0; i--) {
-                const day = daysInPrevMonth - i;
-                const div = document.createElement('div');
-                div.className = 'day-cell other-month';
-                div.textContent = day;
-                grid.appendChild(div);
+                let d = document.createElement('div');
+                d.className = 'day-cell other-month';
+                d.textContent = daysInPrevMonth - i;
+                grid.appendChild(d);
             }
-            
-            const selectedDate = getDateFromInput();
+
+            let selectedDate = getDateFromInput();
             for (let i = 1; i <= daysInMonth; i++) {
-                const div = document.createElement('div');
-                div.className = 'day-cell';
-                div.textContent = i;
-                
-                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                
-                if (calendarData[dateKey]) {
-                    div.classList.add('has-events');
-                }
-                
-                if (year === currentYear && month === currentMonth && i === today.getDate()) {
-                    div.classList.add('today');
-                }
-                
-                if (year === selectedDate.getFullYear() && month === selectedDate.getMonth() && i === selectedDate.getDate()) {
-                    div.classList.add('selected');
-                }
-                
-                div.onclick = function() {
-                    const newDate = new Date(year, month, i);
-                    document.getElementById('dateInput').value = 
-                        `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                let d = document.createElement('div');
+                d.className = 'day-cell';
+                d.textContent = i;
+                const dateKey = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(i).padStart(2, '0');
+                if (calendarData[dateKey]) d.classList.add('has-events');
+                if (year === today.getFullYear() && month === today.getMonth() && i === today.getDate()) d.classList.add('today');
+                if (year === selectedDate.getFullYear() && month === selectedDate.getMonth() && i === selectedDate.getDate()) d.classList.add('selected');
+                d.onclick = function() {
+                    let newDate = new Date(year, month, i);
+                    document.getElementById('dateInput').value = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(i).padStart(2, '0');
                     setView('list');
                     loadEvents();
                 };
-                
-                grid.appendChild(div);
+                grid.appendChild(d);
             }
-            
-            const totalCells = startDay + daysInMonth;
-            const remainingCells = 42 - totalCells;
+
+            let totalCells = startDay + daysInMonth;
+            let remainingCells = 42 - totalCells;
             for (let i = 1; i <= remainingCells; i++) {
-                const div = document.createElement('div');
-                div.className = 'day-cell other-month';
-                div.textContent = i;
-                const nextMonthDate = new Date(year, month + 1, i);
-                const dateKey = `${nextMonthDate.getFullYear()}-${String(nextMonthDate.getMonth() + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
-                if (calendarData[dateKey]) {
-                    div.classList.add('has-events');
-                }
-                grid.appendChild(div);
+                let d = document.createElement('div');
+                d.className = 'day-cell other-month';
+                d.textContent = i;
+                grid.appendChild(d);
             }
         }
 
         function changeMonth(delta) {
             calendarMonth += delta;
-            if (calendarMonth > 11) {
-                calendarMonth = 0;
-                calendarYear++;
-            } else if (calendarMonth < 0) {
-                calendarMonth = 11;
-                calendarYear--;
-            }
+            if (calendarMonth > 11) { calendarMonth = 0; calendarYear++; }
+            else if (calendarMonth < 0) { calendarMonth = 11; calendarYear--; }
             renderCalendar(calendarMonth, calendarYear);
         }
 
         function goTodayCalendar() {
-            const today = new Date();
+            let today = new Date();
             calendarMonth = today.getMonth();
             calendarYear = today.getFullYear();
             renderCalendar(calendarMonth, calendarYear);
         }
 
-        function generateCalendarData() {
-            const today = new Date();
-            const year = today.getFullYear();
-            const month = today.getMonth();
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-            
-            calendarData = {};
-            
-            const sampleDates = [1, 3, 5, 8, 12, 15, 18, 20, 22, 25, 27, 28, 30];
-            sampleDates.forEach(day => {
-                if (day <= daysInMonth) {
-                    const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    calendarData[dateKey] = true;
-                }
-            });
-            
-            const todayKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(today.getDate()).padStart(2, '0')}`;
-            calendarData[todayKey] = true;
-            
-            const prevMonth = month === 0 ? 11 : month - 1;
-            const prevMonthYear = month === 0 ? year - 1 : year;
-            const prevMonthDays = new Date(prevMonthYear, prevMonth + 1, 0).getDate();
-            [3, 7, 10, 14, 18].forEach(day => {
-                if (day <= prevMonthDays) {
-                    const dateKey = `${prevMonthYear}-${String(prevMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                    calendarData[dateKey] = true;
-                }
-            });
-            
-            const nextMonth = month === 11 ? 0 : month + 1;
-            const nextMonthYear = month === 11 ? year + 1 : year;
-            [2, 6, 9, 13, 16, 21, 24].forEach(day => {
-                const dateKey = `${nextMonthYear}-${String(nextMonth + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-                calendarData[dateKey] = true;
-            });
-        }
-
-        // ===== UTILITY =====
         function formatDate(date) {
             return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         }
 
         function getDateFromInput() {
-            const val = document.getElementById('dateInput').value;
-            if (val) {
-                const parts = val.split('-');
-                return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-            }
+            let val = document.getElementById('dateInput').value;
+            if (val) { let parts = val.split('-'); return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2])); }
             return new Date();
         }
 
@@ -888,41 +781,79 @@
         }
 
         function toggleFavorite(year, text, type) {
-            const index = favorites.findIndex(f => f.year === year && f.text === text);
-            if (index > -1) {
-                favorites.splice(index, 1);
-            } else {
-                favorites.push({ year, text, type, date: new Date().toISOString() });
-            }
+            let index = favorites.findIndex(f => f.year === year && f.text === text);
+            if (index > -1) favorites.splice(index, 1);
+            else favorites.push({ year, text, type, date: new Date().toISOString() });
             localStorage.setItem('historyFavorites', JSON.stringify(favorites));
             renderFavorites();
             loadEvents();
         }
 
         function renderFavorites() {
-            const card = document.getElementById('favoritesCard');
-            const list = document.getElementById('favoritesList');
-            const count = document.getElementById('favCount');
-            
-            if (favorites.length === 0) {
-                card.style.display = 'none';
-                return;
-            }
+            let card = document.getElementById('favoritesCard');
+            let list = document.getElementById('favoritesList');
+            let count = document.getElementById('favCount');
+            if (favorites.length === 0) { card.style.display = 'none'; return; }
             card.style.display = 'block';
             count.textContent = favorites.length;
-            
             let html = '';
             favorites.forEach(f => {
-                html += `
-                    <div class="event-item">
-                        <span class="event-year">${f.year}</span>
-                        <span class="event-text">${f.text}</span>
-                        <button class="event-remove-btn" onclick="removeFavorite('${f.year}', '${f.text.replace(/'/g, "\\'")}')">✕</button>
-                    </div>
-                `;
+                html += `<div class="event-item"><span class="event-year">${f.year}</span><span class="event-text">${f.text}</span><button class="event-remove-btn" onclick="removeFavorite('${f.year}', '${f.text.replace(/'/g, "\\'")}')">✕</button></div>`;
             });
             list.innerHTML = html;
         }
 
         function removeFavorite(year, text) {
-            favorites = favorites.filter(f => !(f.year
+            favorites = favorites.filter(f => !(f.year === year && f.text === text));
+            localStorage.setItem('historyFavorites', JSON.stringify(favorites));
+            renderFavorites();
+            loadEvents();
+        }
+
+        async function loadEvents() {
+            let date = getDateFromInput();
+            let month = date.getMonth() + 1;
+            let day = date.getDate();
+            document.getElementById('headerDate').innerHTML = formatDate(date);
+            let content = document.getElementById('content');
+            content.innerHTML = `<div class="loading-state"><div class="spinner"></div><p>${getText('loading')}</p></div>`;
+
+            try {
+                let response = await fetch('/api/events?month=' + month + '&day=' + day);
+                let data = await response.json();
+                currentEvents = data;
+                let html = '';
+
+                if (data.events && data.events.length > 0) {
+                    html += `<div class="card"><div class="card-header"><h2>${getText('events_label')}</h2><span class="badge">${data.events.length}</span></div>`;
+                    data.events.forEach(e => {
+                        let fav = isFavorited(e.year, e.text);
+                        html += `<div class="event-item"><span class="event-year">${e.year}</span><span class="event-text">${e.text}</span><button class="event-fav-btn ${fav ? 'favorited' : ''}" onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\'")}', 'event')">${fav ? '⭐' : '☆'}</button></div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                if (data.births && data.births.length > 0) {
+                    html += `<div class="card"><div class="card-header"><h2>${getText('births_label')}</h2><span class="badge">${data.births.length}</span></div>`;
+                    data.births.forEach(e => {
+                        let fav = isFavorited(e.year, e.text);
+                        html += `<div class="event-item"><span class="event-year">${e.year}</span><span class="event-text">${e.text}</span><button class="event-fav-btn ${fav ? 'favorited' : ''}" onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\'")}', 'birth')">${fav ? '⭐' : '☆'}</button></div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                if (data.deaths && data.deaths.length > 0) {
+                    html += `<div class="card"><div class="card-header"><h2>${getText('deaths_label')}</h2><span class="badge">${data.deaths.length}</span></div>`;
+                    data.deaths.forEach(e => {
+                        let fav = isFavorited(e.year, e.text);
+                        html += `<div class="event-item"><span class="event-year">${e.year}</span><span class="event-text">${e.text}</span><button class="event-fav-btn ${fav ? 'favorited' : ''}" onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\'")}', 'death')">${fav ? '⭐' : '☆'}</button></div>`;
+                    });
+                    html += `</div>`;
+                }
+
+                if (!html) html = `<div class="card" style="text-align:center;padding:40px 20px;"><p style="color:#888888;">${getText('no_events')}</p></div>`;
+                content.innerHTML = html;
+                renderFavorites();
+                setTimeout(generateQuiz, 500);
+            } catch (err) {
+                content.innerHTML = `<div class="card" style="text-align:center;padding:40px 20px
