@@ -474,83 +474,108 @@ def health():
     return jsonify({'status': 'ok', 'message': 'History API is running!'})# ===== ARTICLE ROUTE =====
 @app.route('/api/article')
 def get_article():
-    """Get article for a specific year or event"""
+    """Get article content using multiple reliable sources"""
     query = request.args.get('title', '')
     if not query:
         return jsonify({'error': 'No title provided'}), 400
     
-    # Extract the year from the event
+    # Extract year from the event
     year_match = re.search(r'\b(\d{4})\b', query)
     year = year_match.group(1) if year_match else None
     
-    if not year:
-        return jsonify({
-            'title': 'No Year Found',
-            'extract': f'📜 **{query}**\n\nCould not find a year in this event. Please try another event.',
-            'full_text': query,
-            'url': '',
-            'thumbnail': '',
-            'source': 'no_year'
-        })
-    
+    # ===== SOURCE 1: On This Day API (Most Reliable) =====
     try:
-        # Get the Wikipedia article for the year
-        page_title = year  # Wikipedia has articles for every year!
-        summary_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{page_title}"
-        summary_resp = requests.get(summary_url, timeout=5)
+        # Get today's date
+        today = datetime.now()
+        month = today.month
+        day = today.day
         
-        if summary_resp.status_code != 200:
-            return jsonify({
-                'title': f'Year {year}',
-                'extract': f'📜 **{query}**\n\n🔗 Read more: https://en.wikipedia.org/wiki/{year}',
-                'full_text': query,
-                'url': f'https://en.wikipedia.org/wiki/{year}',
-                'thumbnail': '',
-                'source': 'fallback'
-            })
+        # Try to find the event in the On This Day API
+        url = f"https://onthisday.salatart.com/events?day={day}&month={month}"
+        resp = requests.get(url, timeout=5)
         
-        summary_data = summary_resp.json()
-        extract = summary_data.get('extract', '')
-        
-        # Try to find the specific event in the year article
-        # Look for keywords from the query in the extract
-        keywords = query.replace(str(year), '').strip().split()
-        matched_sentence = ''
-        
-        if extract:
-            sentences = extract.split('.')
-            for sentence in sentences:
-                for word in keywords[:3]:  # Check first 3 keywords
-                    if len(word) > 3 and word.lower() in sentence.lower():
-                        matched_sentence = sentence.strip() + '.'
-                        break
+        if resp.status_code == 200:
+            data = resp.json()
+            events = data.get('data', [])
+            
+            # Search for events matching the year
+            for event in events:
+                event_year = event.get('year')
+                if event_year and str(event_year) == year:
+                    # Found a matching event!
+                    event_text = event.get('text', '')
+                    return jsonify({
+                        'title': f"{event_year} - {event_text[:50]}...",
+                        'extract': f"📅 **On this day in {event_year}:**\n\n{event_text}\n\n📖 Source: On This Day API",
+                        'full_text': event_text,
+                        'url': f"https://en.wikipedia.org/wiki/{event_year}",
+                        'thumbnail': '',
+                        'source': 'onthisday_api'
+                    })
+    except:
+        pass
+    
+    # ===== SOURCE 2: Wikipedia Year Article (Fallback) =====
+    if year:
+        try:
+            page_title = year
+            summary_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{page_title}"
+            summary_resp = requests.get(summary_url, timeout=5)
+            
+            if summary_resp.status_code == 200:
+                summary_data = summary_resp.json()
+                extract = summary_data.get('extract', '')
+                
+                # Try to find the specific event in the year article
+                keywords = query.replace(str(year), '').strip().split()
+                matched_sentence = ''
+                
+                if extract:
+                    sentences = extract.split('.')
+                    for sentence in sentences[:10]:
+                        for word in keywords[:3]:
+                            if len(word) > 3 and word.lower() in sentence.lower():
+                                matched_sentence = sentence.strip() + '.'
+                                break
+                        if matched_sentence:
+                            break
+                
                 if matched_sentence:
-                    break
-        
-        if matched_sentence:
-            display_text = f'📅 In {year}: {matched_sentence}\n\n📖 From the Wikipedia article about {year}.'
-        else:
-            display_text = f'📅 **{query}**\n\n📖 From the Wikipedia article about {year}:\n\n{extract[:500]}...'
-        
+                    display_text = f"📅 **In {year}:** {matched_sentence}\n\n📖 From the Wikipedia article about {year}."
+                else:
+                    display_text = f"📅 **{query}**\n\n📖 From the Wikipedia article about {year}:\n\n{extract[:500]}..."
+                
+                return jsonify({
+                    'title': f'Year {year}',
+                    'extract': display_text,
+                    'full_text': extract,
+                    'url': f'https://en.wikipedia.org/wiki/{year}',
+                    'thumbnail': summary_data.get('thumbnail', {}).get('source', ''),
+                    'source': 'wikipedia_year'
+                })
+        except:
+            pass
+    
+    # ===== SOURCE 3: Custom Fallback (Always Works) =====
+    if year:
         return jsonify({
-            'title': f'Year {year}',
-            'extract': display_text,
-            'full_text': extract,
-            'url': f'https://en.wikipedia.org/wiki/{year}',
-            'thumbnail': summary_data.get('thumbnail', {}).get('source', ''),
-            'source': 'wikipedia_year'
-        })
-        
-    except Exception as e:
-        return jsonify({
-            'title': f'Year {year}',
-            'extract': f'📜 **{query}**\n\n🔗 Read more: https://en.wikipedia.org/wiki/{year}',
+            'title': f'About {year}',
+            'extract': f"📜 **{query}**\n\n🔗 Read more on Wikipedia: https://en.wikipedia.org/wiki/{year}\n\n💡 This event happened in {year}. For more details, visit the link above.",
             'full_text': query,
             'url': f'https://en.wikipedia.org/wiki/{year}',
             'thumbnail': '',
             'source': 'fallback'
         })
-
+    
+    # ===== SOURCE 4: Final Fallback =====
+    return jsonify({
+        'title': 'Historical Event',
+        'extract': f"📜 **{query}**\n\n💡 No specific article found. Try searching on Wikipedia:\nhttps://en.wikipedia.org/w/index.php?search={query.replace(' ', '+')}",
+        'full_text': query,
+        'url': f"https://en.wikipedia.org/w/index.php?search={query.replace(' ', '+')}",
+        'thumbnail': '',
+        'source': 'fallback_final'
+    })
 # ===== START SERVER =====
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
