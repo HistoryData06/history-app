@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
+    <meta name="theme-color" content="#000000">
+    <title>📅 Today in History</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Arial', 'Helvetica', sans-serif;
+            background: #000000;
+            min-height: 100vh;
+            padding: 20px;
+            color: #ffffff;
+        }
+        ::-webkit-scrollbar { width: 4px; }
+        ::-webkit-scrollbar-track { background: #000000; }
+        ::-webkit-scrollbar-thumb { background: #FFD700; border-radius: 10px; }
+
+        .container { max-width: 580px; margin: 0 auto; padding: 10px 0 30px; }
+
+        /* HEADER */
+        .header {
+            text-align: center;
+            padding: 30px 20px 25px;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #FFD700;
+            position: relative;
+        }
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -3px;
+            left: 10%;
+            width: 80%;
+            height: 3px;
+            background: linear-gradient(90deg, transparent, #FFD700, #FFD700, transparent);
+        }
+        .header-icon {
+            font-size: 3.2em;
+            display: block;
+            margin-bottom: 8px;
+            filter: drop-shadow(0 0 30px rgba(255, 215, 0, 0.3));
+            animation: pulse 3s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.08); }
+        }
+        .header h1 {
+            font-size: 2.2em;
+            font-weight: 900;
+            letter-spacing: 6px;
+            color: #FFD700;
+            text-shadow: 0 0 40px rgba(255, 215, 0, 0.15);
+            text-transform: uppercase;
+        }
+        .header .subtitle {
+            font-size: 0.7em;
+            color: #888888;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            margin-top: 6px;
+            font-weight: 300;
+        }
+        .header .date {
+            font-size: 1.1em;
+            color: #ffffff;
+            margin-top: 14px;
+            letter-spacing: 3px;
+            border-top: 1px solid rgba(255, 215, 0, 0.15);
+            padding-top: 14px;
+            display: inline-block;
+            padding-left: 30px;
+            padding-right: 30px;
+            font-weight: 300;
+        }
+        .header .date span {
+            color: #FFD700;
+            font-weight: 700;
+        }
+
+        /* DATE PICKER */
+        .date-picker {
+            background: #0a0a0a;
+            border-radius: 12px;
+            padding: 18px 20px;
+            margin-bottom: 22px;
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+        .date-picker label {
+            color: #FFD700;
+            font-weight: 700;
+            font-size: 0.85em;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .date-picker input {
+            flex: 1;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            background: #1a1a1a;
+            color: #ffffff;
+            font-size: 1em;
+            min-width: 150px;
+        }
+        .date-picker input:focus {
+            outline: none;
+            border-color: #FFD700;
+        }
+        .date-picker .go-btn {
+            padding: 10px 24px;
+            background: #FFD700;
+            border: none;
+            border-radius: 8px;
+            color: #000000;
+            font-weight: 900;
+            font-size: 0.85em;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            transition: all 0.3s ease;
+        }
+        .date-picker .go-btn:hover {
+            background: #FFE44D;
+            transform: scale(1.02);
+        }
+        .date-picker .go-btn:active {
+            transform: scale(0.95);
+        }
+        .date-picker .today-btn {
+            padding: 10px 16px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 8px;
+            color: #FFD700;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .date-picker .today-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        /* RANDOM FACT */
+        .fact-card {
+            background: #0a0a0a;
+            border-radius: 12px;
+            padding: 20px 22px;
+            margin-bottom: 22px;
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            text-align: center;
+        }
+        .fact-card .fact-icon {
+            font-size: 2em;
+            display: block;
+            margin-bottom: 8px;
+        }
+        .fact-card .fact-text {
+            color: #ffffff;
+            font-size: 0.95em;
+            line-height: 1.6;
+            font-weight: 300;
+        }
+        .fact-card .fact-year {
+            color: #FFD700;
+            font-weight: 700;
+        }
+        .fact-card .fact-btn {
+            margin-top: 12px;
+            padding: 8px 20px;
+            background: rgba(255, 215, 0, 0.1);
+            border: 1px solid rgba(255, 215, 0, 0.2);
+            border-radius: 20px;
+            color: #FFD700;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .fact-card .fact-btn:hover {
+            background: rgba(255, 215, 0, 0.2);
+        }
+
+        /* CARDS */
+        .card {
+            background: #0a0a0a;
+            border-radius: 12px;
+            padding: 24px 22px;
+            margin-bottom: 22px;
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.8);
+            transition: transform 0.2s ease;
+        }
+        .card:hover { transform: translateY(-2px); border-color: rgba(255, 215, 0, 0.25); }
+        .card-header {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid rgba(255, 215, 0, 0.08);
+        }
+        .card-header .icon { font-size: 1.6em; line-height: 1; }
+        .card-header h2 {
+            font-size: 0.85em;
+            font-weight: 700;
+            color: #FFD700;
+            letter-spacing: 3px;
+            text-transform: uppercase;
+        }
+        .card-header .badge {
+            margin-left: auto;
+            background: rgba(255, 215, 0, 0.10);
+            padding: 2px 12px;
+            border-radius: 20px;
+            font-size: 0.65em;
+            color: #FFD700;
+            letter-spacing: 1px;
+            font-weight: 600;
+            border: 1px solid rgba(255, 215, 0, 0.10);
+        }
+        .event-item {
+            padding: 14px 0;
+            border-bottom: 1px solid rgba(255, 215, 0, 0.04);
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            transition: background 0.2s ease;
+            border-radius: 6px;
+            padding-left: 8px;
+            padding-right: 8px;
+            cursor: pointer;
+        }
+        .event-item:last-child { border-bottom: none; }
+        .event-item:hover { background: rgba(255, 215, 0, 0.04); }
+        .event-year {
+            flex-shrink: 0;
+            color: #FFD700;
+            font-weight: 900;
+            font-size: 0.95em;
+            min-width: 58px;
+            padding: 2px 10px;
+            background: rgba(255, 215, 0, 0.06);
+            border-radius: 20px;
+            text-align: center;
+            border: 1px solid rgba(255, 215, 0, 0.08);
+        }
+        .event-text {
+            color: #ffffff;
+            font-size: 0.95em;
+            line-height: 1.6;
+            font-weight: 300;
+            flex: 1;
+        }
+        .event-actions {
+            display: flex;
+            gap: 8px;
+            flex-shrink: 0;
+            align-items: center;
+        }
+        .event-actions button {
+            background: none;
+            border: none;
+            font-size: 1.1em;
+            cursor: pointer;
+            padding: 4px 6px;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            opacity: 0.5;
+        }
+        .event-actions button:hover { opacity: 1; background: rgba(255, 215, 0, 0.1); }
+        .event-actions .fav-btn.favorited { opacity: 1; color: #FFD700; }
+
+        /* SHARE BUTTON */
+        .share-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 8px;
+        }
+        .share-btn {
+            flex: 1;
+            padding: 12px;
+            background: rgba(255, 215, 0, 0.08);
+            border: 1px solid rgba(255, 215, 0, 0.15);
+            border-radius: 8px;
+            color: #FFD700;
+            font-size: 0.85em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            font-weight: 600;
+        }
+        .share-btn:hover { background: rgba(255, 215, 0, 0.15); }
+        .share-btn:active { transform: scale(0.95); }
+
+        /* FAVORITES */
+        .favorites-section {
+            margin-top: 10px;
+        }
+        .favorites-section .empty-favs {
+            text-align: center;
+            color: #666666;
+            padding: 20px;
+            font-weight: 300;
+        }
+
+        /* LOADING */
+        .loading-state {
+            text-align: center;
+            padding: 50px 20px;
+            color: #666666;
+        }
+        .loading-state .spinner {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 215, 0, 0.08);
+            border-top: 3px solid #FFD700;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin-bottom: 16px;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .loading-state p {
+            font-size: 0.9em;
+            font-weight: 300;
+            letter-spacing: 3px;
+            color: #888888;
+        }
+
+        /* REFRESH BUTTON */
+        .refresh-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            background: #FFD700;
+            border: none;
+            border-radius: 50px;
+            color: #000000;
+            font-size: 0.95em;
+            font-weight: 900;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            margin-top: 8px;
+            box-shadow: 0 4px 20px rgba(255, 215, 0, 0.15);
+        }
+        .refresh-btn:hover {
+            background: #FFE44D;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(255, 215, 0, 0.25);
+        }
+        .refresh-btn:active { transform: scale(0.97); background: #E6C200; }
+
+        /* FOOTER */
+        .footer {
+            text-align: center;
+            color: #333333;
+            font-size: 0.7em;
+            padding: 30px 0 10px;
+            font-weight: 300;
+            letter-spacing: 3px;
+            border-top: 1px solid rgba(255, 215, 0, 0.04);
+            margin-top: 10px;
+        }
+        .footer .heart { color: #FFD700; }
+        .footer a { color: #FFD700; text-decoration: none; }
+
+        /* RESPONSIVE */
+        @media (max-width: 480px) {
+            body { padding: 12px; }
+            .header { padding: 20px 12px 18px; }
+            .header h1 { font-size: 1.6em; letter-spacing: 3px; }
+            .header .date { font-size: 1em; }
+            .card { padding: 18px 14px; }
+            .event-item { padding: 12px 0; gap: 10px; }
+            .event-year { min-width: 48px; font-size: 0.85em; }
+            .event-text { font-size: 0.88em; }
+            .refresh-btn { font-size: 0.85em; padding: 16px; letter-spacing: 2px; }
+            .date-picker { flex-direction: column; }
+            .date-picker input { width: 100%; }
+            .date-picker .go-btn { width: 100%; }
+            .date-picker .today-btn { width: 100%; }
+        }
+
+        /* ANIMATIONS */
+        .card {
+            animation: fadeInUp 0.6s ease forwards;
+            opacity: 0;
+        }
+        .card:nth-child(1) { animation-delay: 0.05s; }
+        .card:nth-child(2) { animation-delay: 0.15s; }
+        .card:nth-child(3) { animation-delay: 0.25s; }
+        @keyframes fadeInUp {
+            from { opacity: 0; transform: translateY(25px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .event-item {
+            animation: fadeIn 0.4s ease forwards;
+            opacity: 0;
+        }
+        .event-item:nth-child(1) { animation-delay: 0.05s; }
+        .event-item:nth-child(2) { animation-delay: 0.10s; }
+        .event-item:nth-child(3) { animation-delay: 0.15s; }
+        .event-item:nth-child(4) { animation-delay: 0.20s; }
+        .event-item:nth-child(5) { animation-delay: 0.25s; }
+        .event-item:nth-child(6) { animation-delay: 0.30s; }
+        .event-item:nth-child(7) { animation-delay: 0.35s; }
+        .event-item:nth-child(8) { animation-delay: 0.40s; }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateX(-10px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+        .glow-line {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255, 215, 0, 0.12), transparent);
+            margin: 6px 0 18px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <span class="header-icon">📜</span>
+            <h1>Today in History</h1>
+            <div class="subtitle">✦ On This Day ✦</div>
+            <div class="date" id="headerDate">{{ date_str }}</div>
+        </div>
+
+        <!-- DATE PICKER -->
+        <div class="date-picker">
+            <label>📅 Date</label>
+            <input type="date" id="dateInput">
+            <button class="go-btn" onclick="goToDate()">Go</button>
+            <button class="today-btn" onclick="goToday()">Today</button>
+        </div>
+
+        <!-- RANDOM FACT -->
+        <div class="fact-card" id="factCard">
+            <span class="fact-icon">💡</span>
+            <div class="fact-text" id="factText">Click for a random historical fact!</div>
+            <button class="fact-btn" onclick="getRandomFact()">🎲 Random Fact</button>
+        </div>
+
+        <!-- FAVORITES -->
+        <div class="card" id="favoritesCard" style="display:none;">
+            <div class="card-header">
+                <span class="icon">⭐</span>
+                <h2>Favorites</h2>
+                <span class="badge" id="favCount">0</span>
+            </div>
+            <div class="glow-line"></div>
+            <div id="favoritesList"></div>
+        </div>
+
+        <!-- CONTENT -->
+        <div id="content">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <p>Loading history...</p>
+            </div>
+        </div>
+
+        <!-- SHARE SECTION -->
+        <div class="share-section">
+            <button class="share-btn" onclick="shareAll()">📤 Share All</button>
+            <button class="share-btn" onclick="shareToday()">📅 Share Today</button>
+        </div>
+
+        <!-- REFRESH BUTTON -->
+        <button class="refresh-btn" onclick="loadEvents()">
+            <span class="icon-refresh">⟳</span> Refresh
+        </button>
+
+        <!-- FOOTER -->
+        <div class="footer">
+            <span class="heart">✦</span> Built with <span class="heart">♥</span> • Wikipedia
+            <br><span style="font-size:0.9em;color:#222;">✨ All features: Search, Favorites, Share, Random Fact ✨</span>
+        </div>
+    </div>
+
+    <script>
+        // ===== STATE =====
+        let currentEvents = [];
+        let currentDate = new Date();
+        let favorites = JSON.parse(localStorage.getItem('historyFavorites') || '[]');
+
+        // ===== UTILITY =====
+        function formatDate(date) {
+            return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+        }
+
+        function formatDateInput(date) {
+            const y = date.getFullYear();
+            const m = String(date.getMonth() + 1).padStart(2, '0');
+            const d = String(date.getDate()).padStart(2, '0');
+            return `${y}-${m}-${d}`;
+        }
+
+        function getDateFromInput() {
+            const val = document.getElementById('dateInput').value;
+            if (val) {
+                const parts = val.split('-');
+                return new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
+            }
+            return new Date();
+        }
+
+        function isFavorited(year, text) {
+            return favorites.some(f => f.year === year && f.text === text);
+        }
+
+        function toggleFavorite(year, text, type) {
+            const key = year + '|' + text;
+            const index = favorites.findIndex(f => f.year === year && f.text === text);
+            if (index > -1) {
+                favorites.splice(index, 1);
+            } else {
+                favorites.push({ year, text, type, date: new Date().toISOString() });
+            }
+            localStorage.setItem('historyFavorites', JSON.stringify(favorites));
+            renderFavorites();
+            loadEvents(); // Refresh to show updated star states
+        }
+
+        // ===== RENDER FAVORITES =====
+        function renderFavorites() {
+            const card = document.getElementById('favoritesCard');
+            const list = document.getElementById('favoritesList');
+            const count = document.getElementById('favCount');
+            
+            if (favorites.length === 0) {
+                card.style.display = 'none';
+                return;
+            }
+            card.style.display = 'block';
+            count.textContent = favorites.length;
+            
+            let html = '';
+            favorites.forEach(f => {
+                html += `
+                    <div class="event-item">
+                        <span class="event-year">${f.year}</span>
+                        <span class="event-text">${f.text}</span>
+                        <div class="event-actions">
+                            <button onclick="removeFavorite('${f.year}', '${f.text.replace(/'/g, "\\'")}')" style="color:#ff6b6b;">✕</button>
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = html;
+        }
+
+        function removeFavorite(year, text) {
+            favorites = favorites.filter(f => !(f.year === year && f.text === text));
+            localStorage.setItem('historyFavorites', JSON.stringify(favorites));
+            renderFavorites();
+            loadEvents();
+        }
+
+        // ===== LOAD EVENTS =====
+        function loadEvents() {
+            const date = getDateFromInput();
+            const month = date.getMonth() + 1;
+            const day = date.getDate();
+            
+            document.getElementById('headerDate').innerHTML = formatDate(date);
+            document.getElementById('dateInput').value = formatDateInput(date);
+            
+            const content = document.getElementById('content');
+            content.innerHTML = `
+                <div class="loading-state">
+                    <div class="spinner"></div>
+                    <p>Loading history...</p>
+                </div>
+            `;
+
+            fetch(`/api/events?month=${month}&day=${day}`)
+                .then(response => response.json())
+                .then(data => {
+                    currentEvents = data;
+                    let html = '';
+
+                    if (data.events && data.events.length > 0) {
+                        html += `
+                            <div class="card">
+                                <div class="card-header">
+                                    <span class="icon">🔥</span>
+                                    <h2>Historical Events</h2>
+                                    <span class="badge">${data.events.length}</span>
+                                </div>
+                                <div class="glow-line"></div>
+                        `;
+                        data.events.forEach(e => {
+                            const fav = isFavorited(e.year, e.text);
+                            html += `
+                                <div class="event-item">
+                                    <span class="event-year">${e.year}</span>
+                                    <span class="event-text">${e.text}</span>
+                                    <div class="event-actions">
+                                        <button class="fav-btn ${fav ? 'favorited' : ''}" onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\'")}', 'event')">
+                                            ${fav ? '⭐' : '☆'}
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += `</div>`;
+                    }
+
+                    if (data.births && data.births.length > 0) {
+                        html += `
+                            <div class="card">
+                                <div class="card-header">
+                                    <span class="icon">🎂</span>
+                                    <h2>Born on This Day</h2>
+                                    <span class="badge">${data.births.length}</span>
+                                </div>
+                                <div class="glow-line"></div>
+                        `;
+                        data.births.forEach(e => {
+                            const fav = isFavorited(e.year, e.text);
+                            html += `
+                                <div class="event-item">
+                                    <span class="event-year">${e.year}</span>
+                                    <span class="event-text">${e.text}</span>
+                                    <div class="event-actions">
+                                        <button class="fav-btn ${fav ? 'favorited' : ''}" onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\'")}', 'birth')">
+                                            ${fav ? '⭐' : '☆'}
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += `</div>`;
+                    }
+
+                    if (data.deaths && data.deaths.length > 0) {
+                        html += `
+                            <div class="card">
+                                <div class="card-header">
+                                    <span class="icon">🕊️</span>
+                                    <h2>Died on This Day</h2>
+                                    <span class="badge">${data.deaths.length}</span>
+                                </div>
+                                <div class="glow-line"></div>
+                        `;
+                        data.deaths.forEach(e => {
+                            const fav = isFavorited(e.year, e.text);
+                            html += `
+                                <div class="event-item">
+                                    <span class="event-year">${e.year}</span>
+                                    <span class="event-text">${e.text}</span>
+                                    <div class="event-actions">
+                                        <button class="fav-btn ${fav ? 'favorited' : ''}" onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\'")}', 'death')">
+                                            ${fav ? '⭐' : '☆'}
+                                        </button>
+                                    </div>
+                                </div>
+                            `;
+                        });
+                        html += `</div>`;
+                    }
+
+                    if (!html) {
+                        html = `
+                            <div class="card" style="text-align:center;padding:40px 20px;">
+                                <span style="font-size:2.5em;">📭</span>
+                                <p style="color:#888888;margin-top:12px;">No events for this date</p>
+                            </div>
+                        `;
+                    }
+
+                    content.innerHTML = html;
+                    renderFavorites();
+                })
+                .catch(err => {
+                    content.innerHTML = `
+                        <div class="card" style="text-align:center;padding:40px 20px;">
+                            <span style="font-size:2.5em;">⚠️</span>
+                            <p style="color:#888888;margin-top:12px;">Connection error</p>
+                        </div>
+                    `;
+                });
+        }
+
+        // ===== DATE FUNCTIONS =====
+        function goToDate() {
+            loadEvents();
+        }
+
+        function goToday() {
+            const today = new Date();
+            document.getElementById('dateInput').value = formatDateInput(today);
+            loadEvents();
+        }
+
+        // ===== RANDOM FACT =====
+        function getRandomFact() {
+            const allEvents = [];
+            // Collect all events from current view
+            if (currentEvents.events) allEvents.push(...currentEvents.events.map(e => ({...e, type: 'event'})));
+            if (currentEvents.births) allEvents.push(...currentEvents.births.map(e => ({...e, type: 'birth'})));
+            if (currentEvents.deaths) allEvents.push(...currentEvents.deaths.map(e => ({...e, type: 'death'})));
+            
+            if (allEvents.length === 0) {
+                document.getElementById('factText').innerHTML = 'No facts available for this date!';
+                return;
+            }
+            
+            const random = allEvents[Math.floor(Math.random() * allEvents.length)];
+            const emojis = { event: '🔥', birth: '🎂', death: '🕊️' };
+            const labels = { event: 'Event', birth: 'Born', death: 'Died' };
+            document.getElementById('factText').innerHTML = 
+                `${emojis[random.type] || '📜'} <span class="fact-year">${random.year}</span> — ${random.text} <span style="color:#666;font-size:0.8em;">(${labels[random.type]})</span>`;
+        }
+
+        // ===== SHARE FUNCTIONS =====
+        function shareAll() {
+            const date = getDateFromInput();
+            let text = `📜 Today in History - ${formatDate(date)}\n\n`;
+            let count = 0;
+            
+            if (currentEvents.events && currentEvents.events.length > 0) {
+                text += `🔥 EVENTS:\n`;
+                currentEvents.events.forEach(e => text += `  ${e.year}: ${e.text}\n`);
+                count += currentEvents.events.length;
+                text += `\n`;
+            }
+            if (currentEvents.births && currentEvents.births.length > 0) {
+                text += `🎂 BIRTHS:\n`;
+                currentEvents.births.forEach(e => text += `  ${e.year}: ${e.text}\n`);
+                count += currentEvents.births.length;
+                text += `\n`;
+            }
+            if (currentEvents.deaths && currentEvents.deaths.length > 0) {
+                text += `🕊️ DEATHS:\n`;
+                currentEvents.deaths.forEach(e => text += `  ${e.year}: ${e.text}\n`);
+                count += currentEvents.deaths.length;
+                text += `\n`;
+            }
+            
+            text += `\n📱 via History App • ${count} events found`;
+            
+            if (navigator.share) {
+                navigator.share({ title: 'Today in History', text: text });
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('📋 Copied to clipboard! Share it anywhere!');
+                }).catch(() => {
+                    prompt('Copy this text:', text);
+                });
+            }
+        }
+
+        function shareToday() {
+            const date = getDateFromInput();
+            let text = `📅 Today in History - ${formatDate(date)}\n\n`;
+            
+            if (currentEvents.events && currentEvents.events.length > 0) {
+                const first = currentEvents.events[0];
+                text += `🔥 ${first.year}: ${first.text}\n`;
+                if (currentEvents.events.length > 1) {
+                    text += `... and ${currentEvents.events.length - 1} more events\n`;
+                }
+            } else {
+                text += `No major events found for this day.\n`;
+            }
+            
+            text += `\n📱 via History App`;
+            
+            if (navigator.share) {
+                navigator.share({ title: 'Today in History', text: text });
+            } else {
+                navigator.clipboard.writeText(text).then(() => {
+                    alert('📋 Copied to clipboard!');
+                }).catch(() => {
+                    prompt('Copy this text:', text);
+                });
+            }
+        }
+
+        // ===== SET DEFAULT DATE =====
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date();
+            document.getElementById('dateInput').value = formatDateInput(today);
+            loadEvents();
+        });
+    </script>
+</body>
+</html>
