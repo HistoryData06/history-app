@@ -9,7 +9,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# ===== SAMPLE DATA (Fallback) =====
+# ===== SAMPLE DATA =====
 SAMPLE_EVENTS = [
     {'year': '1914', 'text': 'World War I began when Austria-Hungary declared war on Serbia'},
     {'year': '1945', 'text': 'A US Army bomber crashed into the Empire State Building'},
@@ -30,22 +30,20 @@ SAMPLE_DEATHS = [
     {'year': '2015', 'text': 'Edward Natapei, Prime Minister of Vanuatu'}
 ]
 
-# ===== HOMEPAGE ROUTE (Serves index.html) =====
+# ===== HOMEPAGE =====
 @app.route('/')
 def serve_index():
-    """Serve the main index.html file."""
     try:
         with open('index.html', 'r', encoding='utf-8') as f:
             return f.read()
     except FileNotFoundError:
-        return "Error: index.html not found. Please make sure the file exists.", 404
+        return "Error: index.html not found", 404
     except Exception as e:
-        return f"Error loading page: {str(e)}", 500
+        return f"Error: {str(e)}", 500
 
-# ===== API ROUTES =====
+# ===== API: EVENTS =====
 @app.route('/api/events')
 def get_events():
-    """Get historical events, births, and deaths for a specific date."""
     month = request.args.get('month', type=int)
     day = request.args.get('day', type=int)
     
@@ -56,7 +54,7 @@ def get_events():
     
     events_list, births_list, deaths_list = [], [], []
     
-    # Try Wikipedia for events
+    # Try Wikipedia
     try:
         url = f"https://api.wikipedia.org/api/rest_v1/feed/onthisday/events/{month}/{day}"
         r = requests.get(url, timeout=5)
@@ -66,10 +64,9 @@ def get_events():
                     'year': str(e.get('year', '?')),
                     'text': re.sub(r'<[^>]+>', '', e.get('text', ''))[:150]
                 })
-    except:
-        pass
+    except Exception as e:
+        print(f"Wikipedia error: {e}")
     
-    # Try Wikipedia for births
     try:
         url = f"https://api.wikipedia.org/api/rest_v1/feed/onthisday/births/{month}/{day}"
         r = requests.get(url, timeout=5)
@@ -79,10 +76,9 @@ def get_events():
                     'year': str(e.get('year', '?')),
                     'text': re.sub(r'<[^>]+>', '', e.get('text', ''))[:120]
                 })
-    except:
-        pass
+    except Exception as e:
+        print(f"Wikipedia error: {e}")
     
-    # Try Wikipedia for deaths
     try:
         url = f"https://api.wikipedia.org/api/rest_v1/feed/onthisday/deaths/{month}/{day}"
         r = requests.get(url, timeout=5)
@@ -92,8 +88,8 @@ def get_events():
                     'year': str(e.get('year', '?')),
                     'text': re.sub(r'<[^>]+>', '', e.get('text', ''))[:120]
                 })
-    except:
-        pass
+    except Exception as e:
+        print(f"Wikipedia error: {e}")
     
     # Use sample data if Wikipedia failed
     if not events_list and not births_list and not deaths_list:
@@ -107,9 +103,9 @@ def get_events():
         'deaths': deaths_list
     })
 
+# ===== API: RANDOM =====
 @app.route('/api/random')
 def random_event():
-    """Get a random historical event for a specific date."""
     month = request.args.get('month', type=int)
     day = request.args.get('day', type=int)
     
@@ -136,12 +132,12 @@ def random_event():
     
     return jsonify(random.choice(events) if events else {'year': '?', 'text': 'No events found'})
 
+# ===== API: HEALTH =====
 @app.route('/api/health')
 def health():
-    """Health check endpoint."""
     return jsonify({'status': 'ok', 'message': 'History API is running!'})
 
-# ===== START THE SERVER =====
+# ===== START SERVER =====
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
     app.run(host='0.0.0.0', port=port)
