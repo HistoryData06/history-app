@@ -474,85 +474,82 @@ def health():
     return jsonify({'status': 'ok', 'message': 'History API is running!'})# ===== ARTICLE ROUTE =====
 @app.route('/api/article')
 def get_article():
-    """Get full Wikipedia article content using Opensearch"""
+    """Get article for a specific year or event"""
     query = request.args.get('title', '')
     if not query:
         return jsonify({'error': 'No title provided'}), 400
     
+    # Extract the year from the event
+    year_match = re.search(r'\b(\d{4})\b', query)
+    year = year_match.group(1) if year_match else None
+    
+    if not year:
+        return jsonify({
+            'title': 'No Year Found',
+            'extract': f'📜 **{query}**\n\nCould not find a year in this event. Please try another event.',
+            'full_text': query,
+            'url': '',
+            'thumbnail': '',
+            'source': 'no_year'
+        })
+    
     try:
-        # ===== STEP 1: Use Opensearch to find the BEST matching article =====
-        # Opensearch is designed for search suggestions - it's more forgiving
-        search_url = f"https://en.wikipedia.org/w/api.php?action=opensearch&search={query}&limit=3&namespace=0&format=json"
-        search_resp = requests.get(search_url, timeout=5)
-        
-        if search_resp.status_code != 200:
-            return jsonify({'error': 'Search failed'}), 500
-            
-        search_data = search_resp.json()
-        titles = search_data[1] if len(search_data) > 1 else []
-        
-        if not titles:
-            # Try extracting key words from the query
-            words = query.split()
-            if len(words) > 3:
-                # Try with first 3 words
-                short_query = ' '.join(words[:3])
-                search_url = f"https://en.wikipedia.org/w/api.php?action=opensearch&search={short_query}&limit=3&namespace=0&format=json"
-                search_resp = requests.get(search_url, timeout=5)
-                if search_resp.status_code == 200:
-                    search_data = search_resp.json()
-                    titles = search_data[1] if len(search_data) > 1 else []
-            
-            if not titles and len(words) > 2:
-                # Try with first 2 words
-                short_query = ' '.join(words[:2])
-                search_url = f"https://en.wikipedia.org/w/api.php?action=opensearch&search={short_query}&limit=3&namespace=0&format=json"
-                search_resp = requests.get(search_url, timeout=5)
-                if search_resp.status_code == 200:
-                    search_data = search_resp.json()
-                    titles = search_data[1] if len(search_data) > 1 else []
-        
-        if not titles:
-            return jsonify({'error': 'No Wikipedia article found for this event'}), 404
-        
-        # Use the first result
-        page_title = titles[0]
-        
-        # ===== STEP 2: Get the page summary =====
+        # Get the Wikipedia article for the year
+        page_title = year  # Wikipedia has articles for every year!
         summary_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{page_title}"
         summary_resp = requests.get(summary_url, timeout=5)
         
         if summary_resp.status_code != 200:
-            return jsonify({'error': 'Failed to get article content'}), 500
-            
+            return jsonify({
+                'title': f'Year {year}',
+                'extract': f'📜 **{query}**\n\n🔗 Read more: https://en.wikipedia.org/wiki/{year}',
+                'full_text': query,
+                'url': f'https://en.wikipedia.org/wiki/{year}',
+                'thumbnail': '',
+                'source': 'fallback'
+            })
+        
         summary_data = summary_resp.json()
         extract = summary_data.get('extract', '')
         
-        if not extract or len(extract) < 50:
-            # Try to get content from the page
-            content_url = f"https://en.wikipedia.org/w/api.php?action=parse&page={page_title}&format=json&prop=text"
-            content_resp = requests.get(content_url, timeout=5)
-            if content_resp.status_code == 200:
-                content_data = content_resp.json()
-                raw_html = content_data.get('parse', {}).get('text', {}).get('*', '')
-                clean_text = re.sub(r'<[^>]+>', ' ', raw_html)
-                clean_text = re.sub(r'\s+', ' ', clean_text).strip()
-                extract = clean_text[:500] + '...' if len(clean_text) > 500 else clean_text
+        # Try to find the specific event in the year article
+        # Look for keywords from the query in the extract
+        keywords = query.replace(str(year), '').strip().split()
+        matched_sentence = ''
         
-        if not extract:
-            extract = f"📖 {page_title}\n\nRead more at: https://en.wikipedia.org/wiki/{page_title.replace(' ', '_')}"
+        if extract:
+            sentences = extract.split('.')
+            for sentence in sentences:
+                for word in keywords[:3]:  # Check first 3 keywords
+                    if len(word) > 3 and word.lower() in sentence.lower():
+                        matched_sentence = sentence.strip() + '.'
+                        break
+                if matched_sentence:
+                    break
+        
+        if matched_sentence:
+            display_text = f'📅 In {year}: {matched_sentence}\n\n📖 From the Wikipedia article about {year}.'
+        else:
+            display_text = f'📅 **{query}**\n\n📖 From the Wikipedia article about {year}:\n\n{extract[:500]}...'
         
         return jsonify({
-            'title': page_title,
-            'extract': extract,
+            'title': f'Year {year}',
+            'extract': display_text,
             'full_text': extract,
-            'url': f"https://en.wikipedia.org/wiki/{page_title.replace(' ', '_')}",
+            'url': f'https://en.wikipedia.org/wiki/{year}',
             'thumbnail': summary_data.get('thumbnail', {}).get('source', ''),
-            'source': 'wikipedia'
+            'source': 'wikipedia_year'
         })
         
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        return jsonify({
+            'title': f'Year {year}',
+            'extract': f'📜 **{query}**\n\n🔗 Read more: https://en.wikipedia.org/wiki/{year}',
+            'full_text': query,
+            'url': f'https://en.wikipedia.org/wiki/{year}',
+            'thumbnail': '',
+            'source': 'fallback'
+        })
 
 # ===== START SERVER =====
 if __name__ == '__main__':
