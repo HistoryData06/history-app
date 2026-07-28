@@ -651,7 +651,7 @@
             loadEvents();
         }
 
-        // ===== LOAD EVENTS =====
+        // ===== LOAD EVENTS (FIXED) =====
         function loadEvents() {
             const date = getDateFromInput();
             const month = date.getMonth() + 1;
@@ -668,8 +668,16 @@
                 </div>
             `;
 
-            fetch(`/api/events?month=${month}&day=${day}`)
-                .then(response => response.json())
+            // ✅ FIX: Use the full URL
+            const apiUrl = `https://history-app-z99b.onrender.com/api/events?month=${month}&day=${day}`;
+            
+            fetch(apiUrl)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error('Network response was not ok');
+                    }
+                    return response.json();
+                })
                 .then(data => {
                     currentEvents = data;
                     let html = '';
@@ -774,7 +782,9 @@
                     content.innerHTML = `
                         <div class="card" style="text-align:center;padding:40px 20px;">
                             <span style="font-size:2.5em;">⚠️</span>
-                            <p style="color:#888888;margin-top:12px;">Connection error</p>
+                            <p style="color:#888888;margin-top:12px;">Error loading events</p>
+                            <p style="color:#666;font-size:0.8em;margin-top:8px;">${err.message}</p>
+                            <button onclick="loadEvents()" style="margin-top:12px;padding:8px 20px;background:#FFD700;border:none;border-radius:6px;color:#000;font-weight:bold;cursor:pointer;">Retry</button>
                         </div>
                     `;
                 });
@@ -869,22 +879,4 @@
                         updateQuizStats();
                     } else {
                         btn.classList.add('wrong');
-                        resultDiv.innerHTML = `❌ Wrong! Correct: ${currentQuiz.correct.text}`;
-                        resultDiv.className = 'quiz-result wrong';
-                        document.querySelectorAll('#quizOptions button').forEach(b => {
-                            if (b.textContent === currentQuiz.correct.text.substring(0, 40) || 
-                                b.textContent === currentQuiz.correct.text.substring(0, 40) + '...') {
-                                b.classList.add('correct');
-                            }
-                        });
-                    }
-                };
-                optionsContainer.appendChild(btn);
-            });
-            
-            document.getElementById('quizResult').innerHTML = '';
-        }
-
-        function updateQuizStats() {
-            const score = parseInt(localStorage.getItem('quizScore') || '0');
-            document.getElementById('quizStats').
+                        resultDiv.innerHTML = `❌ Wrong! Correct: ${currentQuiz.correct.text
