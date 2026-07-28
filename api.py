@@ -480,35 +480,60 @@ def get_article():
         return jsonify({'error': 'No title provided'}), 400
     
     try:
-        # Clean the search query
+        # Extract year if present
+        year_match = re.search(r'\b(\d{4})\b', title)
+        year = year_match.group(1) if year_match else None
+        
+        # Clean the search query - remove extra words and special characters
         clean_title = re.sub(r'[^\w\s]', '', title)
         clean_title = ' '.join(clean_title.split())
         
-        # Try multiple search strategies in order
-        search_strategies = [
-            clean_title,  # Strategy 1: Full clean title
-            title,  # Strategy 2: Original title
-            ' '.join(clean_title.split()[:3]) if len(clean_title.split()) > 3 else clean_title,  # Strategy 3: First 3 words
-            None  # Strategy 4: Year + first 2 words (will be set below if year exists)
-        ]
+        # Build search terms - focus on key words
+        words = clean_title.split()
         
-        # Extract year if present
-        year_match = re.search(r'\b(\d{4})\b', title)
-        if year_match:
-            year = year_match.group(1)
-            words = clean_title.split()
-            if len(words) > 2:
-                search_strategies[3] = f"{year} {' '.join(words[:2])}"
-            else:
-                search_strategies[3] = f"{year} {' '.join(words[:1])}" if words else year
+        # Remove common words that don't help with search
+        stop_words = ['the', 'a', 'an', 'of', 'for', 'on', 'at', 'to', 'in', 'with', 'without', 'and', 'but', 'or', 'yet', 'so', 'as', 'by', 'from', 'into', 'through', 'during', 'including', 'after', 'before', 'when', 'where', 'who', 'which', 'that']
+        key_words = [w for w in words if w.lower() not in stop_words and len(w) > 2]
+        
+        # Build search strategies
+        search_strategies = []
+        
+        # Strategy 1: Year + first 3 key words
+        if year and len(key_words) >= 3:
+            search_strategies.append(f"{year} {' '.join(key_words[:3])}")
+        
+        # Strategy 2: Year + first 2 key words
+        if year and len(key_words) >= 2:
+            search_strategies.append(f"{year} {' '.join(key_words[:2])}")
+        
+        # Strategy 3: First 4 key words without year
+        if len(key_words) >= 4:
+            search_strategies.append(' '.join(key_words[:4]))
+        
+        # Strategy 4: First 3 key words without year
+        if len(key_words) >= 3:
+            search_strategies.append(' '.join(key_words[:3]))
+        
+        # Strategy 5: Just the year (if exists)
+        if year:
+            search_strategies.append(year)
+        
+        # Strategy 6: First 2 key words
+        if len(key_words) >= 2:
+            search_strategies.append(' '.join(key_words[:2]))
+        
+        # Strategy 7: Full clean title (last resort)
+        search_strategies.append(clean_title[:100])
         
         page_title = None
         
         for search_term in search_strategies:
             if not search_term or len(search_term) < 3:
                 continue
-                
-            search_url = f"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={search_term}&format=json"
+            
+            # URL encode the search term
+            encoded_term = requests.utils.quote(search_term)
+            search_url = f"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={encoded_term}&format=json"
             search_resp = requests.get(search_url, timeout=5)
             
             if search_resp.status_code == 200:
