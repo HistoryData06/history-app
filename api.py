@@ -176,7 +176,6 @@ HTML_TEMPLATE = """
             letter-spacing: 3px;
         }
 
-        /* Language Selector */
         .lang-selector {
             background: #0a0a0a;
             border-radius: 12px;
@@ -305,6 +304,7 @@ HTML_TEMPLATE = """
             font-size: 0.95em;
             line-height: 1.6;
             font-weight: 300;
+            flex: 1;
         }
 
         .fact-card {
@@ -474,9 +474,8 @@ HTML_TEMPLATE = """
 </head>
 <body>
     <div class="container">
-        <!-- LANGUAGE SELECTOR -->
         <div class="lang-selector">
-            <span class="lang-flag" id="langFlag">🌍</span>
+            <span class="lang-flag">🌍</span>
             <label for="langSelect">Language</label>
             <select id="langSelect" onchange="changeLanguage(this.value)">
                 <option value="en">🇬🇧 English</option>
@@ -534,9 +533,7 @@ HTML_TEMPLATE = """
 
         <button class="refresh-btn" id="refreshBtn" onclick="loadEvents()">⟳ Refresh</button>
 
-        <div class="footer" id="footerText">
-            Built with ❤️ • Wikipedia
-        </div>
+        <div class="footer" id="footerText">Built with ❤️ • Wikipedia</div>
     </div>
 
     <script>
@@ -544,7 +541,6 @@ HTML_TEMPLATE = """
         let currentLang = localStorage.getItem('historyLang') || 'en';
         let translations = {};
 
-        // Load translations from server
         async function loadTranslations() {
             try {
                 const response = await fetch('/api/languages');
@@ -562,14 +558,13 @@ HTML_TEMPLATE = """
             localStorage.setItem('historyLang', lang);
             document.getElementById('langSelect').value = lang;
             updateUI();
-            loadEvents(); // Reload events to refresh labels
+            loadEvents();
         }
 
         function getText(key) {
             if (translations[currentLang] && translations[currentLang][key]) {
                 return translations[currentLang][key];
             }
-            // Fallback to English
             if (translations['en'] && translations['en'][key]) {
                 return translations['en'][key];
             }
@@ -577,13 +572,11 @@ HTML_TEMPLATE = """
         }
 
         function updateUI() {
-            // Update all text elements with data-lang attribute
             document.querySelectorAll('[data-lang]').forEach(el => {
                 const key = el.getAttribute('data-lang');
                 el.textContent = getText(key);
             });
             
-            // Update specific elements by ID
             document.getElementById('appTitle').textContent = getText('app_title');
             document.getElementById('dateLabel').textContent = getText('date_label');
             document.getElementById('goBtn').textContent = getText('go_btn');
@@ -596,12 +589,7 @@ HTML_TEMPLATE = """
             document.getElementById('shareTodayBtn').textContent = getText('share_today');
             document.getElementById('refreshBtn').textContent = getText('refresh_btn');
             document.getElementById('footerText').textContent = getText('footer');
-            
-            // Update fact text if it's the default
-            const factText = document.getElementById('factText');
-            if (factText.textContent === 'Click for a random fact!' || factText.textContent === 'Click for a random historical fact!') {
-                factText.textContent = getText('random_fact');
-            }
+            document.getElementById('loadingText').textContent = getText('loading');
         }
 
         // ===== STATE =====
@@ -658,8 +646,8 @@ HTML_TEMPLATE = """
                     <div class="event-item">
                         <span class="event-year">${f.year}</span>
                         <span class="event-text">${f.text}</span>
-                        <button onclick="removeFavorite('${f.year}', '${f.text.replace(/'/g, "\\'")}')" 
-                                style="background:none;border:none;color:#ff6b6b;font-size:1.2em;cursor:pointer;margin-left:auto;padding:0 8px;">✕</button>
+                        <button onclick="removeFavorite('${f.year}', '${f.text.replace(/'/g, "\\\\'")}')" 
+                                style="background:none;border:none;color:#ff6b6b;font-size:1.2em;cursor:pointer;padding:0 8px;">✕</button>
                     </div>
                 `;
             });
@@ -709,8 +697,8 @@ HTML_TEMPLATE = """
                             <div class="event-item">
                                 <span class="event-year">${e.year}</span>
                                 <span class="event-text">${e.text}</span>
-                                <button onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\'")}', 'event')"
-                                        style="background:none;border:none;color:${fav ? '#FFD700' : '#555'};font-size:1.2em;cursor:pointer;margin-left:auto;padding:0 8px;">
+                                <button onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\\\'")}', 'event')"
+                                        style="background:none;border:none;color:${fav ? '#FFD700' : '#555'};font-size:1.2em;cursor:pointer;padding:0 8px;">
                                     ${fav ? '⭐' : '☆'}
                                 </button>
                             </div>
@@ -733,8 +721,8 @@ HTML_TEMPLATE = """
                             <div class="event-item">
                                 <span class="event-year">${e.year}</span>
                                 <span class="event-text">${e.text}</span>
-                                <button onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\'")}', 'birth')"
-                                        style="background:none;border:none;color:${fav ? '#FFD700' : '#555'};font-size:1.2em;cursor:pointer;margin-left:auto;padding:0 8px;">
+                                <button onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\\\'")}', 'birth')"
+                                        style="background:none;border:none;color:${fav ? '#FFD700' : '#555'};font-size:1.2em;cursor:pointer;padding:0 8px;">
                                     ${fav ? '⭐' : '☆'}
                                 </button>
                             </div>
@@ -757,8 +745,8 @@ HTML_TEMPLATE = """
                             <div class="event-item">
                                 <span class="event-year">${e.year}</span>
                                 <span class="event-text">${e.text}</span>
-                                <button onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\'")}', 'death')"
-                                        style="background:none;border:none;color:${fav ? '#FFD700' : '#555'};font-size:1.2em;cursor:pointer;margin-left:auto;padding:0 8px;">
+                                <button onclick="toggleFavorite('${e.year}', '${e.text.replace(/'/g, "\\\\'")}', 'death')"
+                                        style="background:none;border:none;color:${fav ? '#FFD700' : '#555'};font-size:1.2em;cursor:pointer;padding:0 8px;">
                                     ${fav ? '⭐' : '☆'}
                                 </button>
                             </div>
@@ -840,3 +828,22 @@ HTML_TEMPLATE = """
                 const sampleYears = ['1776', '1865', '1941', '1969', '1492', '1789'];
                 const sampleTexts = ['Declaration of Independence', 'Civil War ended', 'Pearl Harbor attack', 'Moon landing', 'Columbus arrived', 'French Revolution'];
                 const idx = shuffledWrongs.length;
+                shuffledWrongs.push({
+                    year: sampleYears[idx % sampleYears.length],
+                    text: sampleTexts[idx % sampleTexts.length],
+                    type: 'event'
+                });
+            }
+            
+            const options = [correct, ...shuffledWrongs].sort(() => Math.random() - 0.5);
+            currentQuiz = { correct, options };
+            quizAnswered = false;
+            
+            document.getElementById('quizQuestion').innerHTML = 
+                `${getText('quiz_question')} <strong>${correct.year}</strong>?`;
+            
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            options.forEach((option) => {
+                const btn = document.createElement('button');
+                btn.text
