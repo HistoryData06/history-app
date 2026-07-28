@@ -324,9 +324,7 @@ LANGUAGES = {
         'loading': '正在加载历史...',
         'no_facts': '此日期没有可用的事实！'
     }
-}
-
-# ===== NOTIFICATION SYSTEM =====
+}# ===== NOTIFICATION SYSTEM =====
 subscriptions = {}
 
 def send_daily_notification():
@@ -482,19 +480,31 @@ def get_article():
         return jsonify({'error': 'No title provided'}), 400
     
     try:
-        # Clean the search query - remove special characters and extra spaces
+        # Clean the search query
         clean_title = re.sub(r'[^\w\s]', '', title)
         clean_title = ' '.join(clean_title.split())
         
-        # Try multiple search strategies
-        search_terms = [
-            clean_title,
-            title,
-            title.split(' ')[0] + ' ' + title.split(' ')[1] if len(title.split(' ')) > 1 else title
+        # Try multiple search strategies in order
+        search_strategies = [
+            clean_title,  # Strategy 1: Full clean title
+            title,  # Strategy 2: Original title
+            ' '.join(clean_title.split()[:3]) if len(clean_title.split()) > 3 else clean_title,  # Strategy 3: First 3 words
+            None  # Strategy 4: Year + first 2 words (will be set below if year exists)
         ]
         
+        # Extract year if present
+        year_match = re.search(r'\b(\d{4})\b', title)
+        if year_match:
+            year = year_match.group(1)
+            words = clean_title.split()
+            if len(words) > 2:
+                search_strategies[3] = f"{year} {' '.join(words[:2])}"
+            else:
+                search_strategies[3] = f"{year} {' '.join(words[:1])}" if words else year
+        
         page_title = None
-        for search_term in search_terms[:2]:  # Try first 2 search terms
+        
+        for search_term in search_strategies:
             if not search_term or len(search_term) < 3:
                 continue
                 
@@ -506,18 +516,6 @@ def get_article():
                 if search_data.get('query', {}).get('search'):
                     page_title = search_data['query']['search'][0]['title']
                     break
-        
-        if not page_title:
-            # Fallback: try searching by year only
-            year_match = re.search(r'\b(\d{4})\b', title)
-            if year_match:
-                year = year_match.group(1)
-                search_url = f"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={year}&format=json"
-                search_resp = requests.get(search_url, timeout=5)
-                if search_resp.status_code == 200:
-                    search_data = search_resp.json()
-                    if search_data.get('query', {}).get('search'):
-                        page_title = search_data['query']['search'][0]['title']
         
         if not page_title:
             return jsonify({'error': 'No Wikipedia article found for this event'}), 404
@@ -540,7 +538,7 @@ def get_article():
         # Get the first 1500 characters as preview
         preview = clean_text[:1500] + '...' if len(clean_text) > 1500 else clean_text
         
-        # If no extract from summary, use preview
+        # Use extract from summary or preview
         extract = summary_data.get('extract', preview)
         if not extract or len(extract) < 50:
             extract = preview
