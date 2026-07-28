@@ -474,75 +474,64 @@ def health():
     return jsonify({'status': 'ok', 'message': 'History API is running!'})# ===== ARTICLE ROUTE =====
 @app.route('/api/article')
 def get_article():
-    """Get full Wikipedia article content using OpenSearch"""
+    """Get article content - tries Wikipedia first, then falls back to Numbers API"""
     query = request.args.get('title', '')
     if not query:
         return jsonify({'error': 'No title provided'}), 400
     
+    # Try to extract year
+    year_match = re.search(r'\b(\d{4})\b', query)
+    year = year_match.group(1) if year_match else None
+    
+    # First try Wikipedia
     try:
-        # Step 1: Use OpenSearch to find the best matching article
-        # OpenSearch is more forgiving and returns suggestions
-        search_url = f"https://en.wikipedia.org/w/api.php?action=opensearch&search={query}&limit=5&namespace=0&format=json"
+        search_url = f"https://en.wikipedia.org/w/api.php?action=opensearch&search={query}&limit=3&namespace=0&format=json"
         search_resp = requests.get(search_url, timeout=5)
         
-        if search_resp.status_code != 200:
-            return jsonify({'error': 'Search failed'}), 500
+        if search_resp.status_code == 200:
+            search_data = search_resp.json()
+            titles = search_data[1] if len(search_data) > 1 else []
             
-        search_data = search_resp.json()
-        
-        # OpenSearch returns: [query, [titles], [descriptions], [links]]
-        titles = search_data[1] if len(search_data) > 1 else []
-        
-        if not titles:
-            # Try a simpler search: just use the year
-            year_match = re.search(r'\b(\d{4})\b', query)
-            if year_match:
-                year = year_match.group(1)
-                search_url = f"https://en.wikipedia.org/w/api.php?action=opensearch&search={year}&limit=5&namespace=0&format=json"
-                search_resp = requests.get(search_url, timeout=5)
-                if search_resp.status_code == 200:
-                    search_data = search_resp.json()
-                    titles = search_data[1] if len(search_data) > 1 else []
-        
-        if not titles:
-            return jsonify({'error': 'No Wikipedia article found for this event'}), 404
-        
-        # Use the first result
-        page_title = titles[0]
-        
-        # Step 2: Get the page summary (extract)
-        summary_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{page_title}"
-        summary_resp = requests.get(summary_url, timeout=5)
-        summary_data = summary_resp.json() if summary_resp.status_code == 200 else {}
-        
-        # Step 3: Get the full content
-        content_url = f"https://en.wikipedia.org/w/api.php?action=parse&page={page_title}&format=json&prop=text"
-        content_resp = requests.get(content_url, timeout=5)
-        content_data = content_resp.json() if content_resp.status_code == 200 else {}
-        
-        # Extract text from HTML content
-        raw_html = content_data.get('parse', {}).get('text', {}).get('*', '')
-        clean_text = re.sub(r'<[^>]+>', ' ', raw_html)
-        clean_text = re.sub(r'\s+', ' ', clean_text).strip()
-        
-        # Get the first 1500 characters as preview
-        preview = clean_text[:1500] + '...' if len(clean_text) > 1500 else clean_text
-        
-        # Use extract from summary or preview
-        extract = summary_data.get('extract', preview)
-        if not extract or len(extract) < 50:
-            extract = preview
-        
-        return jsonify({
-            'title': page_title,
-            'extract': extract,
-            'full_text': preview,
-            'url': f"https://en.wikipedia.org/wiki/{page_title.replace(' ', '_')}",
-            'thumbnail': summary_data.get('thumbnail', {}).get('source', '')
-        })
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
+            if titles:
+                page_title = titles[0]
+                summary_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{page_title}"
+                summary_resp = requests.get(summary_url, timeout=5)
+                summary_data = summary_resp.json() if summary_resp.status_code == 200 else {}
+                
+                extract = summary_data.get('extract', '')
+                if extract and len(extract) > 50:
+                    return jsonify({
+                        'title': page_title,
+                        'extract': extract,
+                        'full_text': extract,
+                        'url': f"https://en.wikipedia.org/wiki/{page_title.replace(' ', '_')}",
+                        'thumbnail': summary_data.get('thumbnail', {}).get('source', ''),
+                        'source': 'wikipedia'
+                    })
+    except:
+        pass
+    
+    # Fallback: Use Numbers API for year facts
+    if year:
+        try:
+            num_url = f"http://numbersapi.com/{year}/year?json"
+            num_resp = requests.get(num_url, timeout=5)
+            if num_resp.status_code == 200:
+                num_data = num_resp.json()
+                fact = num_data.get('text', '')
+                if fact:
+                    return jsonify({
+                        'title': f"Year {year}",
+                        'extract': f"📊 {fact}",
+                        'full_text': fact,
+                        'url': f"http://numbersapi.com/{year}/year",
+                        'thumbnail': '',
+                        'source': 'numbersapi'
+                    })
+        except:
+            pass
+    
+    return jsonify({'error': 'No article found for this event'}), 404
 
 # ===== START SERVER =====
 if __name__ == '__main__':
