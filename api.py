@@ -474,83 +474,48 @@ def health():
     return jsonify({'status': 'ok', 'message': 'History API is running!'})# ===== ARTICLE ROUTE =====
 @app.route('/api/article')
 def get_article():
-    """Get full Wikipedia article content"""
-    title = request.args.get('title', '')
-    if not title:
+    """Get full Wikipedia article content using OpenSearch"""
+    query = request.args.get('title', '')
+    if not query:
         return jsonify({'error': 'No title provided'}), 400
     
     try:
-        # Extract year if present
-        year_match = re.search(r'\b(\d{4})\b', title)
-        year = year_match.group(1) if year_match else None
+        # Step 1: Use OpenSearch to find the best matching article
+        # OpenSearch is more forgiving and returns suggestions
+        search_url = f"https://en.wikipedia.org/w/api.php?action=opensearch&search={query}&limit=5&namespace=0&format=json"
+        search_resp = requests.get(search_url, timeout=5)
         
-        # Clean the search query - remove extra words and special characters
-        clean_title = re.sub(r'[^\w\s]', '', title)
-        clean_title = ' '.join(clean_title.split())
-        
-        # Build search terms - focus on key words
-        words = clean_title.split()
-        
-        # Remove common words that don't help with search
-        stop_words = ['the', 'a', 'an', 'of', 'for', 'on', 'at', 'to', 'in', 'with', 'without', 'and', 'but', 'or', 'yet', 'so', 'as', 'by', 'from', 'into', 'through', 'during', 'including', 'after', 'before', 'when', 'where', 'who', 'which', 'that']
-        key_words = [w for w in words if w.lower() not in stop_words and len(w) > 2]
-        
-        # Build search strategies
-        search_strategies = []
-        
-        # Strategy 1: Year + first 3 key words
-        if year and len(key_words) >= 3:
-            search_strategies.append(f"{year} {' '.join(key_words[:3])}")
-        
-        # Strategy 2: Year + first 2 key words
-        if year and len(key_words) >= 2:
-            search_strategies.append(f"{year} {' '.join(key_words[:2])}")
-        
-        # Strategy 3: First 4 key words without year
-        if len(key_words) >= 4:
-            search_strategies.append(' '.join(key_words[:4]))
-        
-        # Strategy 4: First 3 key words without year
-        if len(key_words) >= 3:
-            search_strategies.append(' '.join(key_words[:3]))
-        
-        # Strategy 5: Just the year (if exists)
-        if year:
-            search_strategies.append(year)
-        
-        # Strategy 6: First 2 key words
-        if len(key_words) >= 2:
-            search_strategies.append(' '.join(key_words[:2]))
-        
-        # Strategy 7: Full clean title (last resort)
-        search_strategies.append(clean_title[:100])
-        
-        page_title = None
-        
-        for search_term in search_strategies:
-            if not search_term or len(search_term) < 3:
-                continue
+        if search_resp.status_code != 200:
+            return jsonify({'error': 'Search failed'}), 500
             
-            # URL encode the search term
-            encoded_term = requests.utils.quote(search_term)
-            search_url = f"https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch={encoded_term}&format=json"
-            search_resp = requests.get(search_url, timeout=5)
-            
-            if search_resp.status_code == 200:
-                search_data = search_resp.json()
-                if search_data.get('query', {}).get('search'):
-                    page_title = search_data['query']['search'][0]['title']
-                    break
+        search_data = search_resp.json()
         
-        if not page_title:
+        # OpenSearch returns: [query, [titles], [descriptions], [links]]
+        titles = search_data[1] if len(search_data) > 1 else []
+        
+        if not titles:
+            # Try a simpler search: just use the year
+            year_match = re.search(r'\b(\d{4})\b', query)
+            if year_match:
+                year = year_match.group(1)
+                search_url = f"https://en.wikipedia.org/w/api.php?action=opensearch&search={year}&limit=5&namespace=0&format=json"
+                search_resp = requests.get(search_url, timeout=5)
+                if search_resp.status_code == 200:
+                    search_data = search_resp.json()
+                    titles = search_data[1] if len(search_data) > 1 else []
+        
+        if not titles:
             return jsonify({'error': 'No Wikipedia article found for this event'}), 404
         
-        # Get the page summary
+        # Use the first result
+        page_title = titles[0]
+        
+        # Step 2: Get the page summary (extract)
         summary_url = f"https://en.wikipedia.org/api/rest_v1/page/summary/{page_title}"
         summary_resp = requests.get(summary_url, timeout=5)
         summary_data = summary_resp.json() if summary_resp.status_code == 200 else {}
         
-        # Get the full content
+        # Step 3: Get the full content
         content_url = f"https://en.wikipedia.org/w/api.php?action=parse&page={page_title}&format=json&prop=text"
         content_resp = requests.get(content_url, timeout=5)
         content_data = content_resp.json() if content_resp.status_code == 200 else {}
