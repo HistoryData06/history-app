@@ -1,17 +1,7 @@
 {
-  "functions": {
-    "api.py": {
-      "excludeFiles": "index.html"
-    }
-  },
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "api.py"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
+  "version": 2,
+  "rewrites": [
+    { "source": "/api/(.*)", "destination": "/api.py" },
+    { "source": "/(.*)", "destination": "/index.html" }
   ]
 }
