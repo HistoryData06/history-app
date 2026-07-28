@@ -496,36 +496,81 @@ prompt('Copy this text:',text);
 }
 
 function openArticle(year, text) {
-const overlay = document.getElementById('articleOverlay');
-const body = document.getElementById('articleBody');
-overlay.classList.add('active');
-body.innerHTML = '<div class="loading-text">📖 Loading article...</div>';
-const searchQuery = year + ' ' + text.split(' ').slice(0, 5).join(' ');
-fetch('/api/article?title=' + encodeURIComponent(searchQuery))
-.then(response => response.json())
-.then(data => {
-if (data.error) {
-body.innerHTML = `<p style="color:#ff6b6b;">❌ ${data.error}</p>`;
-return;
-}
-let html = `<h2 class="article-title">${data.title}</h2>`;
-if (data.thumbnail) {
-html += `<img src="${data.thumbnail}" class="article-thumbnail" alt="${data.title}">`;
-}
-const paragraphs = data.extract ? data.extract.split('\n').filter(p => p.trim()) : [data.full_text];
-html += '<div class="article-text">';
-paragraphs.forEach(p => {
-if (p.trim()) {
-html += `<p>${p}</p>`;
-}
-});
-html += '</div>';
-html += `<a href="${data.url}" target="_blank" class="read-more">📖 Read full article on Wikipedia →</a>`;
-body.innerHTML = html;
-})
-.catch(err => {
-body.innerHTML = `<p style="color:#ff6b6b;">❌ Failed to load article: ${err.message}</p>`;
-});
+    const overlay = document.getElementById('articleOverlay');
+    const body = document.getElementById('articleBody');
+    overlay.classList.add('active');
+    body.innerHTML = '<div class="loading-text">📖 Loading article...</div>';
+    
+    const searchQuery = year + ' ' + text.split(' ').slice(0, 5).join(' ');
+    
+    fetch('/api/article?title=' + encodeURIComponent(searchQuery))
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                body.innerHTML = `<p style="color:#ff6b6b;">❌ ${data.error}</p>`;
+                return;
+            }
+            
+            let html = `<h2 class="article-title">${data.title}</h2>`;
+            
+            if (data.thumbnail) {
+                html += `<img src="${data.thumbnail}" class="article-thumbnail" alt="${data.title}" style="max-width:100%;border-radius:8px;margin:12px 0;">`;
+            }
+            
+            // Clean and format the extract
+            let extractText = data.extract || data.full_text || 'No content available';
+            
+            // Split into paragraphs and clean up
+            const paragraphs = extractText.split('\n').filter(p => p.trim());
+            
+            html += '<div class="article-text">';
+            if (data.source === 'onthisday_api') {
+                // On This Day API format
+                html += `<p style="color:#FFD700;font-style:italic;">📅 From On This Day API</p>`;
+                paragraphs.forEach(p => {
+                    if (p.trim()) {
+                        html += `<p>${p}</p>`;
+                    }
+                });
+            } else if (data.source === 'wikipedia_year') {
+                // Wikipedia year format
+                html += `<p style="color:#FFD700;font-style:italic;">📖 From Wikipedia</p>`;
+                paragraphs.forEach(p => {
+                    if (p.trim()) {
+                        html += `<p>${p}</p>`;
+                    }
+                });
+            } else {
+                // Fallback format
+                paragraphs.forEach(p => {
+                    if (p.trim()) {
+                        html += `<p>${p}</p>`;
+                    }
+                });
+            }
+            html += '</div>';
+            
+            // Add source link if available
+            if (data.url) {
+                html += `<a href="${data.url}" target="_blank" class="read-more">🔗 Read more →</a>`;
+            }
+            
+            // Show source badge
+            const sourceLabels = {
+                'onthisday_api': '📅 On This Day',
+                'wikipedia_year': '📖 Wikipedia',
+                'wikipedia': '📖 Wikipedia',
+                'fallback': '💡 Information',
+                'fallback_final': '💡 Information'
+            };
+            const sourceLabel = sourceLabels[data.source] || '📖 Source';
+            html += `<p style="text-align:center;color:#666;font-size:0.8em;margin-top:16px;">Source: ${sourceLabel}</p>`;
+            
+            body.innerHTML = html;
+        })
+        .catch(err => {
+            body.innerHTML = `<p style="color:#ff6b6b;">❌ Failed to load article: ${err.message}</p>`;
+        });
 }
 
 function closeArticle() {
