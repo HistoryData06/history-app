@@ -5,8 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=yes">
 <title>📅 Today in History</title>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:#000;min-height:100vh;padding:20px;color:#fff}.container{max-width:580px;margin:0 auto;padding:10px 0 30px}.header{text-align:center;padding:30px 20px 25px;margin-bottom:30px;border-bottom:3px solid #FFD700}.header h1{font-size:2.2em;font-weight:900;letter-spacing:6px;color:#FFD700;text-transform:uppercase}.header .date{font-size:1.1em;color:#fff;margin-top:14px;letter-spacing:3px}.lang-selector{background:#0a0a0a;border-radius:12px;padding:12px 20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);display:flex;align-items:center;gap:12px;flex-wrap:wrap}.lang-selector label{color:#FFD700;font-weight:700;font-size:.85em;letter-spacing:2px}.lang-selector select{flex:1;padding:8px 14px;border-radius:8px;border:1px solid rgba(255,215,0,0.2);background:#1a1a1a;color:#fff;font-size:.95em;cursor:pointer;min-width:120px}.view-toggle{display:flex;gap:10px;margin-bottom:22px}.view-toggle button{flex:1;padding:12px;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#888;font-size:.85em;cursor:pointer;font-weight:600}.view-toggle button.active{background:rgba(255,215,0,0.15);border-color:#FFD700;color:#FFD700}.calendar-container{background:#0a0a0a;border-radius:12px;padding:20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15)}.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}.calendar-header .month-year{color:#FFD700;font-size:1.1em;font-weight:700;letter-spacing:2px}.calendar-header .nav-btn{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;padding:8px 16px;cursor:pointer}.calendar-header .today-btn-cal{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;padding:8px 16px;cursor:pointer;font-size:.8em}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.calendar-grid .day-name{text-align:center;color:#888;font-size:.7em;padding:6px 0;font-weight:700;text-transform:uppercase}.calendar-grid .day-cell{text-align:center;padding:8px 0;border-radius:8px;cursor:pointer;font-size:.9em;color:#888;position:relative}.calendar-grid .day-cell:hover{background:rgba(255,215,0,0.1)}.calendar-grid .day-cell.has-events{color:#fff;font-weight:700}.calendar-grid .day-cell.has-events::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:#FFD700}.calendar-grid .day-cell.today{background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.2);color:#FFD700;font-weight:900}.calendar-grid .day-cell.selected{background:#FFD700;color:#000;font-weight:900}.calendar-grid .day-cell.selected::after{background:#000}.calendar-grid .day-cell.other-month{color:#333}.calendar-legend{display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:.7em;color:#888}.calendar-legend span{display:flex;align-items:center;gap:6px}.calendar-legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#FFD700}.calendar-legend .dot.gray{background:#555}.date-picker{background:#0a0a0a;border-radius:12px;padding:18px 20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);display:flex;gap:10px;align-items:center;flex-wrap:wrap}.date-picker input{flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,215,0,0.2);background:#1a1a1a;color:#fff;font-size:1em;min-width:150px}.date-picker input:focus{outline:none;border-color:#FFD700}.date-picker .go-btn{padding:10px 24px;background:#FFD700;border:none;border-radius:8px;color:#000;font-weight:900;cursor:pointer}.date-picker .today-btn{padding:10px 16px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;cursor:pointer}.card{background:#0a0a0a;border-radius:12px;padding:24px 22px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15)}.card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid rgba(255,215,0,0.08)}.card-header h2{font-size:.85em;color:#FFD700;letter-spacing:3px;text-transform:uppercase}.card-header .badge{margin-left:auto;background:rgba(255,215,0,0.1);padding:2px 12px;border-radius:20px;color:#FFD700;font-size:.65em}.event-item{padding:12px 0;border-bottom:1px solid rgba(255,215,0,0.04);display:flex;gap:14px;align-items:flex-start}.event-item:last-child{border-bottom:none}.event-year{flex-shrink:0;color:#FFD700;font-weight:900;min-width:58px;padding:2px 10px;background:rgba(255,215,0,0.06);border-radius:20px;text-align:center;border:1px solid rgba(255,215,0,0.08)}.event-text{color:#fff;font-size:.95em;line-height:1.6;font-weight:300;flex:1}.event-fav-btn{background:none;border:none;font-size:1.2em;cursor:pointer;padding:0 8px;color:#555}.event-fav-btn.favorited{color:#FFD700}.event-remove-btn{background:none;border:none;color:#ff6b6b;font-size:1.2em;cursor:pointer;padding:0 8px}.fact-card{background:#0a0a0a;border-radius:12px;padding:20px 22px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);text-align:center}.fact-card .fact-text{color:#fff;font-size:.95em;line-height:1.6;font-weight:300}.fact-btn{margin-top:12px;padding:8px 20px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:20px;color:#FFD700;cursor:pointer;font-size:.8em}.quiz-container{margin-top:16px;border-top:1px solid rgba(255,215,0,0.1);padding-top:16px}.quiz-container .quiz-label{color:#FFD700;font-weight:700;font-size:.85em;display:block;margin-bottom:10px}.quiz-container .quiz-question{font-size:1em;color:#fff;margin-bottom:10px}.quiz-container .quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}.quiz-container .quiz-options button{padding:10px 12px;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#fff;font-size:.8em;cursor:pointer;text-align:left;font-family:inherit}.quiz-container .quiz-options button:hover{background:rgba(255,215,0,0.15)}.quiz-container .quiz-options button.correct{background:rgba(0,255,0,0.2);border-color:#0f0}.quiz-container .quiz-options button.wrong{background:rgba(255,0,0,0.2);border-color:#f00}.quiz-container .quiz-result{margin-top:10px;font-weight:600;font-size:.95em;min-height:1.5em}.quiz-container .quiz-result.correct{color:#0f0}.quiz-container .quiz-result.wrong{color:#ff6b6b}.quiz-container .quiz-stats{margin-top:10px;font-size:.85em;color:#FFD700;text-align:center}.refresh-btn{display:block;width:100%;padding:18px;background:#FFD700;border:none;border-radius:50px;color:#000;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:4px;margin-top:8px}.share-section{display:flex;gap:10px;margin-top:8px}.share-btn{flex:1;padding:12px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#FFD700;font-size:.85em;cursor:pointer;text-align:center;font-weight:600}.loading-state{text-align:center;padding:50px 20px;color:#666}.spinner{display:inline-block;width:40px;height:40px;border:3px solid rgba(255,215,0,0.08);border-top:3px solid #FFD700;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.footer{text-align:center;color:#333;font-size:.7em;padding:30px 0 10px;border-top:1px solid rgba(255,215,0,0.04);margin-top:10px}
+*{margin:0;padding:0;box-sizing:border-box}body{font-family:Arial,sans-serif;background:#000;min-height:100vh;padding:20px;color:#fff}.container{max-width:580px;margin:0 auto;padding:10px 0 30px}.header{text-align:center;padding:30px 20px 25px;margin-bottom:30px;border-bottom:3px solid #FFD700}.header h1{font-size:2.2em;font-weight:900;letter-spacing:6px;color:#FFD700;text-transform:uppercase}.header .date{font-size:1.1em;color:#fff;margin-top:14px;letter-spacing:3px}.lang-selector{background:#0a0a0a;border-radius:12px;padding:12px 20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);display:flex;align-items:center;gap:12px;flex-wrap:wrap}.lang-selector label{color:#FFD700;font-weight:700;font-size:.85em;letter-spacing:2px}.lang-selector select{flex:1;padding:8px 14px;border-radius:8px;border:1px solid rgba(255,215,0,0.2);background:#1a1a1a;color:#fff;font-size:.95em;cursor:pointer;min-width:120px}.view-toggle{display:flex;gap:10px;margin-bottom:22px}.view-toggle button{flex:1;padding:12px;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#888;font-size:.85em;cursor:pointer;font-weight:600}.view-toggle button.active{background:rgba(255,215,0,0.15);border-color:#FFD700;color:#FFD700}.calendar-container{background:#0a0a0a;border-radius:12px;padding:20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15)}.calendar-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:8px}.calendar-header .month-year{color:#FFD700;font-size:1.1em;font-weight:700;letter-spacing:2px}.calendar-header .nav-btn{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;padding:8px 16px;cursor:pointer}.calendar-header .today-btn-cal{background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;padding:8px 16px;cursor:pointer;font-size:.8em}.calendar-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px}.calendar-grid .day-name{text-align:center;color:#888;font-size:.7em;padding:6px 0;font-weight:700;text-transform:uppercase}.calendar-grid .day-cell{text-align:center;padding:8px 0;border-radius:8px;cursor:pointer;font-size:.9em;color:#888;position:relative}.calendar-grid .day-cell:hover{background:rgba(255,215,0,0.1)}.calendar-grid .day-cell.has-events{color:#fff;font-weight:700}.calendar-grid .day-cell.has-events::after{content:'';position:absolute;bottom:4px;left:50%;transform:translateX(-50%);width:6px;height:6px;border-radius:50%;background:#FFD700}.calendar-grid .day-cell.today{background:rgba(255,215,0,0.15);border:1px solid rgba(255,215,0,0.2);color:#FFD700;font-weight:900}.calendar-grid .day-cell.selected{background:#FFD700;color:#000;font-weight:900}.calendar-grid .day-cell.selected::after{background:#000}.calendar-grid .day-cell.other-month{color:#333}.calendar-legend{display:flex;gap:16px;justify-content:center;margin-top:12px;font-size:.7em;color:#888}.calendar-legend span{display:flex;align-items:center;gap:6px}.calendar-legend .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#FFD700}.calendar-legend .dot.gray{background:#555}.date-picker{background:#0a0a0a;border-radius:12px;padding:18px 20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);display:flex;gap:10px;align-items:center;flex-wrap:wrap}.date-picker input{flex:1;padding:10px 14px;border-radius:8px;border:1px solid rgba(255,215,0,0.2);background:#1a1a1a;color:#fff;font-size:1em;min-width:150px}.date-picker input:focus{outline:none;border-color:#FFD700}.date-picker .go-btn{padding:10px 24px;background:#FFD700;border:none;border-radius:8px;color:#000;font-weight:900;cursor:pointer}.date-picker .today-btn{padding:10px 16px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:8px;color:#FFD700;cursor:pointer}.card{background:#0a0a0a;border-radius:12px;padding:24px 22px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15)}.card-header{display:flex;align-items:center;gap:12px;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid rgba(255,215,0,0.08)}.card-header h2{font-size:.85em;color:#FFD700;letter-spacing:3px;text-transform:uppercase}.card-header .badge{margin-left:auto;background:rgba(255,215,0,0.1);padding:2px 12px;border-radius:20px;color:#FFD700;font-size:.65em}.event-item{padding:12px 0;border-bottom:1px solid rgba(255,215,0,0.04);display:flex;gap:14px;align-items:flex-start;cursor:pointer;transition:background 0.2s ease}.event-item:hover{background:rgba(255,215,0,0.05)}.event-item:last-child{border-bottom:none}.event-year{flex-shrink:0;color:#FFD700;font-weight:900;min-width:58px;padding:2px 10px;background:rgba(255,215,0,0.06);border-radius:20px;text-align:center;border:1px solid rgba(255,215,0,0.08)}.event-text{color:#fff;font-size:.95em;line-height:1.6;font-weight:300;flex:1}.event-fav-btn{background:none;border:none;font-size:1.2em;cursor:pointer;padding:0 8px;color:#555;flex-shrink:0}.event-fav-btn.favorited{color:#FFD700}.event-remove-btn{background:none;border:none;color:#ff6b6b;font-size:1.2em;cursor:pointer;padding:0 8px}.fact-card{background:#0a0a0a;border-radius:12px;padding:20px 22px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15);text-align:center}.fact-card .fact-text{color:#fff;font-size:.95em;line-height:1.6;font-weight:300}.fact-btn{margin-top:12px;padding:8px 20px;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:20px;color:#FFD700;cursor:pointer;font-size:.8em}.quiz-container{margin-top:16px;border-top:1px solid rgba(255,215,0,0.1);padding-top:16px}.quiz-container .quiz-label{color:#FFD700;font-weight:700;font-size:.85em;display:block;margin-bottom:10px}.quiz-container .quiz-question{font-size:1em;color:#fff;margin-bottom:10px}.quiz-container .quiz-options{display:grid;grid-template-columns:1fr 1fr;gap:8px}.quiz-container .quiz-options button{padding:10px 12px;background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#fff;font-size:.8em;cursor:pointer;text-align:left;font-family:inherit}.quiz-container .quiz-options button:hover{background:rgba(255,215,0,0.15)}.quiz-container .quiz-options button.correct{background:rgba(0,255,0,0.2);border-color:#0f0}.quiz-container .quiz-options button.wrong{background:rgba(255,0,0,0.2);border-color:#f00}.quiz-container .quiz-result{margin-top:10px;font-weight:600;font-size:.95em;min-height:1.5em}.quiz-container .quiz-result.correct{color:#0f0}.quiz-container .quiz-result.wrong{color:#ff6b6b}.quiz-container .quiz-stats{margin-top:10px;font-size:.85em;color:#FFD700;text-align:center}.refresh-btn{display:block;width:100%;padding:18px;background:#FFD700;border:none;border-radius:50px;color:#000;font-weight:900;cursor:pointer;text-transform:uppercase;letter-spacing:4px;margin-top:8px}.share-section{display:flex;gap:10px;margin-top:8px}.share-btn{flex:1;padding:12px;background:rgba(255,215,0,0.08);border:1px solid rgba(255,215,0,0.15);border-radius:8px;color:#FFD700;font-size:.85em;cursor:pointer;text-align:center;font-weight:600}.loading-state{text-align:center;padding:50px 20px;color:#666}.spinner{display:inline-block;width:40px;height:40px;border:3px solid rgba(255,215,0,0.08);border-top:3px solid #FFD700;border-radius:50%;animation:spin .8s linear infinite;margin-bottom:16px}@keyframes spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}.footer{text-align:center;color:#333;font-size:.7em;padding:30px 0 10px;border-top:1px solid rgba(255,215,0,0.04);margin-top:10px}
 .badges-container{background:#0a0a0a;border-radius:12px;padding:20px;margin-bottom:22px;border:1px solid rgba(255,215,0,0.15)}.badges-title{color:#FFD700;font-size:.9em;font-weight:700;letter-spacing:2px;margin-bottom:12px;text-align:center}.badges-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(80px,1fr));gap:10px}.badge-item{background:rgba(255,215,0,0.05);border:1px solid rgba(255,215,0,0.1);border-radius:12px;padding:12px 6px;text-align:center;transition:all .3s ease;opacity:.4;filter:grayscale(1)}.badge-item.unlocked{opacity:1;filter:grayscale(0);border-color:rgba(255,215,0,0.3);background:rgba(255,215,0,0.1)}.badge-item .badge-icon{font-size:2em;display:block;margin-bottom:4px}.badge-item .badge-name{font-size:.6em;color:#888;display:block}.badge-item.unlocked .badge-name{color:#FFD700}
+/* ARTICLE POPUP */
+.article-overlay{display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.92);z-index:9999;padding:20px;overflow-y:auto}.article-overlay.active{display:block}.article-overlay .article-content{background:#0a0a0a;border-radius:16px;max-width:600px;margin:20px auto;padding:30px;border:1px solid rgba(255,215,0,0.15);max-height:90vh;overflow-y:auto;position:relative}.article-overlay .article-content .close-btn{position:sticky;top:0;float:right;background:rgba(255,215,0,0.1);border:1px solid rgba(255,215,0,0.2);border-radius:50%;color:#FFD700;font-size:1.5em;width:40px;height:40px;cursor:pointer;transition:all .3s ease;display:flex;align-items:center;justify-content:center}.article-overlay .article-content .close-btn:hover{background:rgba(255,215,0,0.2);transform:rotate(90deg)}.article-overlay .article-content .article-title{color:#FFD700;font-size:1.5em;margin-bottom:16px;padding-right:50px}.article-overlay .article-content .article-text{color:#ddd;line-height:1.8;font-size:.95em}.article-overlay .article-content .article-text p{margin-bottom:12px}.article-overlay .article-content .article-thumbnail{max-width:100%;border-radius:8px;margin:12px 0}.article-overlay .article-content .loading-text{color:#888;text-align:center;padding:40px 0}.article-overlay .article-content .read-more{display:block;text-align:center;margin-top:20px;color:#FFD700;text-decoration:none;border:1px solid rgba(255,215,0,0.2);padding:12px;border-radius:8px;transition:all .3s ease}.article-overlay .article-content .read-more:hover{background:rgba(255,215,0,0.1)}
 @media(max-width:480px){body{padding:12px}.header h1{font-size:1.6em}.date-picker{flex-direction:column}.date-picker input{width:100%}.quiz-container .quiz-options{grid-template-columns:1fr 1fr}.lang-selector{flex-direction:column;align-items:stretch}.calendar-grid .day-cell{padding:6px 0;font-size:.8em}.badges-grid{grid-template-columns:repeat(auto-fill,minmax(65px,1fr))}}@media(max-width:380px){.quiz-container .quiz-options{grid-template-columns:1fr}.calendar-grid .day-cell{padding:4px 0;font-size:.7em}}
 </style>
 </head>
@@ -75,14 +77,15 @@
 <button class="share-btn" id="shareAllBtn" onclick="shareAll()">📤 Share All</button>
 <button class="share-btn" id="shareTodayBtn" onclick="shareToday()">📅 Share Today</button>
 </div>
-        <!-- NOTIFICATION TOGGLE -->
-<div class="notification-section" style="display:flex;gap:10px;margin-top:8px;">
-    <button class="share-btn" id="notifyBtn" onclick="toggleNotification()">
-        🔔 Enable Daily Notifications
-    </button>
-</div>
 <button class="refresh-btn" id="refreshBtn" onclick="loadEvents()">⟳ Refresh</button>
 <div class="footer" id="footerText">Built with ❤️ • Wikipedia</div>
+</div>
+<!-- ARTICLE POPUP -->
+<div class="article-overlay" id="articleOverlay" onclick="if(event.target===this)closeArticle()">
+<div class="article-content" id="articleContent">
+<button class="close-btn" onclick="closeArticle()">✕</button>
+<div id="articleBody"><div class="loading-text">📖 Loading article...</div></div>
+</div>
 </div>
 <script>let currentLang=localStorage.getItem('historyLang')||'en',translations={},currentEvents=[],favorites=JSON.parse(localStorage.getItem('historyFavorites')||'[]'),currentView='list',calendarMonth=new Date().getMonth(),calendarYear=new Date().getFullYear(),calendarData={};
 
@@ -309,7 +312,7 @@ if(l.events&&l.events.length>0){
 r+=`<div class="card"><div class="card-header"><h2>${getText('events_label')}</h2><span class="badge">${l.events.length}</span></div>`;
 l.events.forEach(t=>{
 let e=isFavorited(t.year,t.text);
-r+=`<div class="event-item"><span class="event-year">${t.year}</span><span class="event-text">${t.text}</span><button class="event-fav-btn ${e?'favorited':''}" onclick="toggleFavorite('${t.year}','${t.text.replace(/'/g,"\\'")}','event')">${e?'⭐':'☆'}</button></div>`
+r+=`<div class="event-item" onclick="openArticle('${t.year}','${t.text.replace(/'/g,"\\'")}')"><span class="event-year">${t.year}</span><span class="event-text">${t.text}</span><button class="event-fav-btn ${e?'favorited':''}" onclick="event.stopPropagation();toggleFavorite('${t.year}','${t.text.replace(/'/g,"\\'")}','event')">${e?'⭐':'☆'}</button></div>`
 });
 r+='</div>'
 }
@@ -317,7 +320,7 @@ if(l.births&&l.births.length>0){
 r+=`<div class="card"><div class="card-header"><h2>${getText('births_label')}</h2><span class="badge">${l.births.length}</span></div>`;
 l.births.forEach(t=>{
 let e=isFavorited(t.year,t.text);
-r+=`<div class="event-item"><span class="event-year">${t.year}</span><span class="event-text">${t.text}</span><button class="event-fav-btn ${e?'favorited':''}" onclick="toggleFavorite('${t.year}','${t.text.replace(/'/g,"\\'")}','birth')">${e?'⭐':'☆'}</button></div>`
+r+=`<div class="event-item" onclick="openArticle('${t.year}','${t.text.replace(/'/g,"\\'")}')"><span class="event-year">${t.year}</span><span class="event-text">${t.text}</span><button class="event-fav-btn ${e?'favorited':''}" onclick="event.stopPropagation();toggleFavorite('${t.year}','${t.text.replace(/'/g,"\\'")}','birth')">${e?'⭐':'☆'}</button></div>`
 });
 r+='</div>'
 }
@@ -325,7 +328,7 @@ if(l.deaths&&l.deaths.length>0){
 r+=`<div class="card"><div class="card-header"><h2>${getText('deaths_label')}</h2><span class="badge">${l.deaths.length}</span></div>`;
 l.deaths.forEach(t=>{
 let e=isFavorited(t.year,t.text);
-r+=`<div class="event-item"><span class="event-year">${t.year}</span><span class="event-text">${t.text}</span><button class="event-fav-btn ${e?'favorited':''}" onclick="toggleFavorite('${t.year}','${t.text.replace(/'/g,"\\'")}','death')">${e?'⭐':'☆'}</button></div>`
+r+=`<div class="event-item" onclick="openArticle('${t.year}','${t.text.replace(/'/g,"\\'")}')"><span class="event-year">${t.year}</span><span class="event-text">${t.text}</span><button class="event-fav-btn ${e?'favorited':''}" onclick="event.stopPropagation();toggleFavorite('${t.year}','${t.text.replace(/'/g,"\\'")}','death')">${e?'⭐':'☆'}</button></div>`
 });
 r+='</div>'
 }
@@ -348,7 +351,7 @@ o.innerHTML=`<div class="card" style="text-align:center;padding:40px 20px;"><p s
 function goToDate(){loadEvents()}
 function goToday(){
 let t=new Date;
-document.getElementById('dateInput').value=t.toISOString().split('T')[0];
+document.getElementById('dateInput').value=t.toISOString().split('')[0];
 loadEvents()
 }
 
@@ -405,108 +408,150 @@ let score=parseInt(localStorage.getItem('quizScore')||'0');
 score++;
 localStorage.setItem('quizScore',score);
 updateQuizStats();
-badges.stats.quizCorrect=(badges.stats.        quizCorrect || 0) + 1;
-        localStorage.setItem('historyBadges', JSON.stringify(badges));
-        checkBadges();
-    } else {
-        btn.classList.add('wrong');
-        resultDiv.innerHTML = getText('quiz_wrong') + ' ' + window.currentQuiz.correct.text;
-        resultDiv.className = 'quiz-result wrong';
-        document.querySelectorAll('#quizOptions button').forEach(b => {
-            if (b.textContent === window.currentQuiz.correct.text.substring(0, 40) || 
-                b.textContent === window.currentQuiz.correct.text.substring(0, 40) + '...') {
-                b.classList.add('correct');
-            }
-        });
-    }
+badges.stats.quizCorrect=(badges.stats.quizCorrect||0)+1;
+localStorage.setItem('historyBadges',JSON.stringify(badges));
+checkBadges();
+}else{
+btn.classList.add('wrong');
+resultDiv.innerHTML=getText('quiz_wrong')+' '+window.currentQuiz.correct.text;
+resultDiv.className='quiz-result wrong';
+document.querySelectorAll('#quizOptions button').forEach(b=>{
+if(b.textContent===window.currentQuiz.correct.text.substring(0,40)||b.textContent===window.currentQuiz.correct.text.substring(0,40)+'...'){
+b.classList.add('correct');
+}
+});
+}
 };
 optionsContainer.appendChild(btn);
 });
-document.getElementById('quizResult').innerHTML = '';
+document.getElementById('quizResult').innerHTML='';
 }
 
-function updateQuizStats() {
-    let score = parseInt(localStorage.getItem('quizScore') || '0');
-    document.getElementById('quizStats').innerHTML = getText('quiz_score') + ' ' + score;
+function updateQuizStats(){
+let score=parseInt(localStorage.getItem('quizScore')||'0');
+document.getElementById('quizStats').innerHTML=getText('quiz_score')+' '+score;
 }
 
-function shareAll() {
-    let date = getDateFromInput();
-    let text = '📜 Today in History - ' + formatDate(date) + '\n\n';
-    let count = 0;
-    if (currentEvents.events && currentEvents.events.length > 0) {
-        text += '🔥 EVENTS:\n';
-        currentEvents.events.forEach(t => { text += '  ' + t.year + ': ' + t.text + '\n' });
-        count += currentEvents.events.length;
-        text += '\n';
-    }
-    if (currentEvents.births && currentEvents.births.length > 0) {
-        text += '🎂 BIRTHS:\n';
-        currentEvents.births.forEach(t => { text += '  ' + t.year + ': ' + t.text + '\n' });
-        count += currentEvents.births.length;
-        text += '\n';
-    }
-    if (currentEvents.deaths && currentEvents.deaths.length > 0) {
-        text += '🕊️ DEATHS:\n';
-        currentEvents.deaths.forEach(t => { text += '  ' + t.year + ': ' + t.text + '\n' });
-        count += currentEvents.deaths.length;
-        text += '\n';
-    }
-    text += '\n📱 via History App • ' + count + ' events found';
-    badges.stats.shares = (badges.stats.shares || 0) + 1;
-    localStorage.setItem('historyBadges', JSON.stringify(badges));
-    checkBadges();
-    if (navigator.share) {
-        navigator.share({ title: 'Today in History', text: text });
-    } else {
-        navigator.clipboard.writeText(text).then(() => {
-            alert('📋 Copied to clipboard! Share it anywhere!');
-        }).catch(() => {
-            prompt('Copy this text:', text);
-        });
-    }
+function shareAll(){
+let date=getDateFromInput();
+let text='📜 Today in History - '+formatDate(date)+'\n\n';
+let count=0;
+if(currentEvents.events&&currentEvents.events.length>0){
+text+='🔥 EVENTS:\n';
+currentEvents.events.forEach(t=>{text+='  '+t.year+': '+t.text+'\n'});
+count+=currentEvents.events.length;
+text+='\n';
+}
+if(currentEvents.births&&currentEvents.births.length>0){
+text+='🎂 BIRTHS:\n';
+currentEvents.births.forEach(t=>{text+='  '+t.year+': '+t.text+'\n'});
+count+=currentEvents.births.length;
+text+='\n';
+}
+if(currentEvents.deaths&&currentEvents.deaths.length>0){
+text+='🕊️ DEATHS:\n';
+currentEvents.deaths.forEach(t=>{text+='  '+t.year+': '+t.text+'\n'});
+count+=currentEvents.deaths.length;
+text+='\n';
+}
+text+='\n📱 via History App • '+count+' events found';
+badges.stats.shares=(badges.stats.shares||0)+1;
+localStorage.setItem('historyBadges',JSON.stringify(badges));
+checkBadges();
+if(navigator.share){
+navigator.share({title:'Today in History',text:text});
+}else{
+navigator.clipboard.writeText(text).then(()=>{
+alert('📋 Copied to clipboard! Share it anywhere!');
+}).catch(()=>{
+prompt('Copy this text:',text);
+});
+}
 }
 
-function shareToday() {
-    let date = getDateFromInput();
-    let text = '📅 Today in History - ' + formatDate(date) + '\n\n';
-    if (currentEvents.events && currentEvents.events.length > 0) {
-        text += '🔥 ' + currentEvents.events[0].year + ': ' + currentEvents.events[0].text + '\n';
-        if (currentEvents.events.length > 1) {
-            text += '... and ' + (currentEvents.events.length - 1) + ' more events\n';
-        }
-    } else {
-        text += 'No major events found for this day.\n';
-    }
-    text += '\n📱 via History App';
-    badges.stats.shares = (badges.stats.shares || 0) + 1;
-    localStorage.setItem('historyBadges', JSON.stringify(badges));
-    checkBadges();
-    if (navigator.share) {
-        navigator.share({ title: 'Today in History', text: text });
-    } else {
-        navigator.clipboard.writeText(text).then(() => {
-            alert('📋 Copied to clipboard!');
-        }).catch(() => {
-            prompt('Copy this text:', text);
-        });
-    }
+function shareToday(){
+let date=getDateFromInput();
+let text='📅 Today in History - '+formatDate(date)+'\n\n';
+if(currentEvents.events&&currentEvents.events.length>0){
+text+='🔥 '+currentEvents.events[0].year+': '+currentEvents.events[0].text+'\n';
+if(currentEvents.events.length>1){
+text+='... and '+(currentEvents.events.length-1)+' more events\n';
 }
+}else{
+text+='No major events found for this day.\n';
+}
+text+='\n📱 via History App';
+badges.stats.shares=(badges.stats.shares||0)+1;
+localStorage.setItem('historyBadges',JSON.stringify(badges));
+checkBadges();
+if(navigator.share){
+navigator.share({title:'Today in History',text:text});
+}else{
+navigator.clipboard.writeText(text).then(()=>{
+alert('📋 Copied to clipboard!');
+}).catch(()=>{
+prompt('Copy this text:',text);
+});
+}
+}
+
+function openArticle(year, text) {
+const overlay = document.getElementById('articleOverlay');
+const body = document.getElementById('articleBody');
+overlay.classList.add('active');
+body.innerHTML = '<div class="loading-text">📖 Loading article...</div>';
+const searchQuery = year + ' ' + text.split(' ').slice(0, 5).join(' ');
+fetch('/api/article?title=' + encodeURIComponent(searchQuery))
+.then(response => response.json())
+.then(data => {
+if (data.error) {
+body.innerHTML = `<p style="color:#ff6b6b;">❌ ${data.error}</p>`;
+return;
+}
+let html = `<h2 class="article-title">${data.title}</h2>`;
+if (data.thumbnail) {
+html += `<img src="${data.thumbnail}" class="article-thumbnail" alt="${data.title}">`;
+}
+const paragraphs = data.extract ? data.extract.split('\n').filter(p => p.trim()) : [data.full_text];
+html += '<div class="article-text">';
+paragraphs.forEach(p => {
+if (p.trim()) {
+html += `<p>${p}</p>`;
+}
+});
+html += '</div>';
+html += `<a href="${data.url}" target="_blank" class="read-more">📖 Read full article on Wikipedia →</a>`;
+body.innerHTML = html;
+})
+.catch(err => {
+body.innerHTML = `<p style="color:#ff6b6b;">❌ Failed to load article: ${err.message}</p>`;
+});
+}
+
+function closeArticle() {
+document.getElementById('articleOverlay').classList.remove('active');
+}
+
+document.addEventListener('keydown', function(e) {
+if (e.key === 'Escape') {
+closeArticle();
+}
+});
 
 document.addEventListener('DOMContentLoaded', async function() {
-    await loadTranslations();
-    let savedLang = localStorage.getItem('historyLang') || 'en';
-    document.getElementById('langSelect').value = savedLang;
-    currentLang = savedLang;
-    updateUI();
-    let today = new Date();
-    document.getElementById('dateInput').value = today.toISOString().split('T')[0];
-    updateQuizStats();
-    generateCalendarData();
-    badges.stats.visits = (badges.stats.visits || 0) + 1;
-    localStorage.setItem('historyBadges', JSON.stringify(badges));
-    checkBadges();
-    loadEvents();
+await loadTranslations();
+let savedLang=localStorage.getItem('historyLang')||'en';
+document.getElementById('langSelect').value=savedLang;
+currentLang=savedLang;
+updateUI();
+let today=new Date();
+document.getElementById('dateInput').value=today.toISOString().split('T')[0];
+updateQuizStats();
+generateCalendarData();
+badges.stats.visits=(badges.stats.visits||0)+1;
+localStorage.setItem('historyBadges',JSON.stringify(badges));
+checkBadges();
+loadEvents();
 });
 </script>
 </body>
