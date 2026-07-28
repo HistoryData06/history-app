@@ -471,7 +471,7 @@ def notification_status():
 
 @app.route('/api/health')
 def health():
-    return jsonify({'status': 'ok', 'message': 'History API is running!'})# ===== ARTICLE ROUTE =====
+    return jsonify({'status': 'ok', 'message': 'History API is running!'})# ===== ARTICLE ROUTE (with DeepSeek AI) =====
 @app.route('/api/article')
 def get_article():
     """Get article about a historical event using AI"""
@@ -485,8 +485,7 @@ def get_article():
     
     # ===== SOURCE 1: Try DeepSeek AI =====
     try:
-        # Get API key from environment
-        deepseek_key = os.environ.get('sk-2d594d1ee9d44f5d89ba5e49427097db')
+        deepseek_key = os.environ.get('DEEPSEEK_API_KEY')
         
         if deepseek_key:
             url = "https://api.deepseek.com/v1/chat/completions"
@@ -495,18 +494,11 @@ def get_article():
                 "Content-Type": "application/json"
             }
             
-            # Clean the query for better AI results
             clean_query = re.sub(r'[^\w\s]', '', query)
             clean_query = ' '.join(clean_query.split())
             
             prompt = f"""Write a short, engaging article about {clean_query} for a "Today in History" mobile app.
-
-The article should:
-- Be 100-150 words long
-- Include key historical facts
-- Be written in a clear, engaging style
-- End with an interesting fact
-
+The article should be 100-150 words long, include key historical facts, be written in a clear, engaging style, and end with an interesting fact.
 Write the article in English:"""
 
             data = {
@@ -596,6 +588,7 @@ Write the article in English:"""
         'thumbnail': '',
         'source': 'fallback_final'
     })
+
 # ===== START SERVER =====
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 8080))
