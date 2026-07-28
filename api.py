@@ -474,7 +474,7 @@ def health():
     return jsonify({'status': 'ok', 'message': 'History API is running!'})# ===== ARTICLE ROUTE (with DeepSeek AI) =====
 @app.route('/api/article')
 def get_article():
-    """Get article using FREE Hugging Face API (no credit card needed)"""
+    """Get article about a historical event"""
     query = request.args.get('title', '')
     if not query:
         return jsonify({'error': 'No title provided'}), 400
@@ -483,54 +483,36 @@ def get_article():
     year_match = re.search(r'\b(\d{4})\b', query)
     year = year_match.group(1) if year_match else None
     
-    # ===== FREE: Try Hugging Face API =====
+    # ===== SOURCE 1: On This Day API (Free) =====
     try:
-        # Hugging Face free inference API - no API key needed for some models!
-        url = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
+        today = datetime.now()
+        month = today.month
+        day = today.day
         
-        clean_query = re.sub(r'[^\w\s]', '', query)
-        clean_query = ' '.join(clean_query.split())
+        url = f"https://onthisday.salatart.com/events?day={day}&month={month}"
+        resp = requests.get(url, timeout=5)
         
-        prompt = f"""Write a short, engaging article about {clean_query} for a "Today in History" mobile app.
-The article should be 100-150 words long, include key historical facts, and be written in a clear, engaging style."""
-
-        data = {
-            "inputs": prompt,
-            "parameters": {
-                "max_new_tokens": 400,
-                "temperature": 0.7
-            }
-        }
-        
-        response = requests.post(url, headers={"Content-Type": "application/json"}, json=data, timeout=15)
-        
-        if response.status_code == 200:
-            result = response.json()
-            # Hugging Face returns different formats
-            if isinstance(result, list) and len(result) > 0:
-                article = result[0].get('generated_text', '')
-            elif isinstance(result, dict):
-                article = result.get('generated_text', '')
-            else:
-                article = str(result)
+        if resp.status_code == 200:
+            data = resp.json()
+            events = data.get('data', [])
             
-            # Clean up the response (remove the prompt)
-            if article.startswith(prompt):
-                article = article[len(prompt):].strip()
-            
-            if article and len(article) > 20:
-                return jsonify({
-                    'title': f"📜 {clean_query}",
-                    'extract': article,
-                    'full_text': article,
-                    'url': '',
-                    'thumbnail': '',
-                    'source': 'huggingface_free'
-                })
+            # Find matching event
+            for event in events:
+                event_year = event.get('year')
+                if event_year and str(event_year) == year:
+                    event_text = event.get('text', '')
+                    return jsonify({
+                        'title': f"{event_year} - Historical Event",
+                        'extract': f"📅 **On this day in {event_year}:**\n\n{event_text}\n\n📖 Source: On This Day API",
+                        'full_text': event_text,
+                        'url': f"https://en.wikipedia.org/wiki/{event_year}",
+                        'thumbnail': '',
+                        'source': 'onthisday'
+                    })
     except Exception as e:
-        print(f"Hugging Face error: {e}")
+        print(f"On This Day API error: {e}")
     
-    # ===== FALLBACK: Wikipedia Year =====
+    # ===== SOURCE 2: Wikipedia Year Article =====
     if year:
         try:
             page_title = year
@@ -540,18 +522,48 @@ The article should be 100-150 words long, include key historical facts, and be w
             if summary_resp.status_code == 200:
                 summary_data = summary_resp.json()
                 extract = summary_data.get('extract', '')
+                
+                # Try to find the specific event in the year article
+                keywords = query.replace(str(year), '').strip().split()
+                matched_sentence = ''
+                
+                if extract:
+                    sentences = extract.split('.')
+                    for sentence in sentences[:10]:
+                        for word in keywords[:3]:
+                            if len(word) > 3 and word.lower() in sentence.lower():
+                                matched_sentence = sentence.strip() + '.'
+                                break
+                        if matched_sentence:
+                            break
+                
+                if matched_sentence:
+                    display_text = f"📅 **In {year}:** {matched_sentence}\n\n📖 From the Wikipedia article about {year}."
+                else:
+                    display_text = f"📅 **{query}**\n\n📖 From the Wikipedia article about {year}:\n\n{extract[:500]}..."
+                
                 return jsonify({
                     'title': f'Year {year}',
-                    'extract': f"📅 **{query}**\n\n📖 From Wikipedia about {year}:\n\n{extract[:500]}...",
+                    'extract': display_text,
                     'full_text': extract,
                     'url': f'https://en.wikipedia.org/wiki/{year}',
                     'thumbnail': summary_data.get('thumbnail', {}).get('source', ''),
                     'source': 'wikipedia_year'
                 })
-        except:
-            pass
+        except Exception as e:
+            print(f"Wikipedia error: {e}")
     
-    # ===== FINAL FALLBACK =====
+    # ===== SOURCE 3: Final Fallback =====
+    if year:
+        return jsonify({
+            'title': f'About {year}',
+            'extract': f"📜 **{query}**\n\n🔗 Read more: https://en.wikipedia.org/wiki/{year}\n\n💡 This event happened in {year}. Click the link above for more details.",
+            'full_text': query,
+            'url': f'https://en.wikipedia.org/wiki/{year}',
+            'thumbnail': '',
+            'source': 'fallback'
+        })
+    
     return jsonify({
         'title': 'Historical Event',
         'extract': f"📜 **{query}**\n\n💡 Try searching on Wikipedia:\nhttps://en.wikipedia.org/w/index.php?search={query.replace(' ', '+')}",
