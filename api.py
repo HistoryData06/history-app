@@ -487,6 +487,12 @@ def get_article():
     try:
         deepseek_key = os.environ.get('DEEPSEEK_API_KEY')
         
+        # 🔍 DEBUG: Check if key exists
+        if deepseek_key:
+            print(f"✅ API Key found! First 10 chars: {deepseek_key[:10]}...")
+        else:
+            print("❌ API Key NOT found in environment variables!")
+        
         if deepseek_key:
             url = "https://api.deepseek.com/v1/chat/completions"
             headers = {
@@ -496,6 +502,9 @@ def get_article():
             
             clean_query = re.sub(r'[^\w\s]', '', query)
             clean_query = ' '.join(clean_query.split())
+            
+            # 🔍 DEBUG: What we're asking
+            print(f"🤖 Asking DeepSeek about: {clean_query}")
             
             prompt = f"""Write a short, engaging article about {clean_query} for a "Today in History" mobile app.
 The article should be 100-150 words long, include key historical facts, be written in a clear, engaging style, and end with an interesting fact.
@@ -513,11 +522,15 @@ Write the article in English:"""
             
             response = requests.post(url, headers=headers, json=data, timeout=10)
             
+            # 🔍 DEBUG: Check response
+            print(f"📥 DeepSeek response status: {response.status_code}")
+            
             if response.status_code == 200:
                 result = response.json()
                 article = result.get('choices', [{}])[0].get('message', {}).get('content', '')
                 
                 if article:
+                    print(f"✅ Article generated! Length: {len(article)} characters")
                     return jsonify({
                         'title': f"📜 {clean_query}",
                         'extract': article,
@@ -526,10 +539,15 @@ Write the article in English:"""
                         'thumbnail': '',
                         'source': 'deepseek_ai'
                     })
+                else:
+                    print("❌ No article content in response")
+            else:
+                print(f"❌ API Error: {response.text}")
     except Exception as e:
-        print(f"DeepSeek AI error: {e}")
+        print(f"❌ DeepSeek AI error: {e}")
     
-    # ===== SOURCE 2: Fallback to Wikipedia Year =====
+    # ===== SOURCE 2: Fallback =====
+    print("⚠️ Falling back to Wikipedia...")
     if year:
         try:
             page_title = year
@@ -570,6 +588,7 @@ Write the article in English:"""
             pass
     
     # ===== SOURCE 3: Final Fallback =====
+    print("⚠️ Using final fallback...")
     if year:
         return jsonify({
             'title': f'About {year}',
