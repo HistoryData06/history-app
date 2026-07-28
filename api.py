@@ -474,7 +474,7 @@ def health():
     return jsonify({'status': 'ok', 'message': 'History API is running!'})# ===== ARTICLE ROUTE (with DeepSeek AI) =====
 @app.route('/api/article')
 def get_article():
-    """Get article about a historical event using AI"""
+    """Get article using FREE Hugging Face API (no credit card needed)"""
     query = request.args.get('title', '')
     if not query:
         return jsonify({'error': 'No title provided'}), 400
@@ -483,104 +483,54 @@ def get_article():
     year_match = re.search(r'\b(\d{4})\b', query)
     year = year_match.group(1) if year_match else None
     
-    # ===== DEBUG: Check API Key =====
-    deepseek_key = os.environ.get('DEEPSEEK_API_KEY')
-    debug_info = {
-        'key_exists': bool(deepseek_key),
-        'key_length': len(deepseek_key) if deepseek_key else 0,
-        'key_prefix': deepseek_key[:10] + '...' if deepseek_key else 'None',
-        'query': query,
-        'year': year
-    }
-    
-    # If no API key, return debug info
-    if not deepseek_key:
-        return jsonify({
-            'title': '⚠️ API Key Missing',
-            'extract': f"🔑 **No DeepSeek API key found!**\n\n"
-                       f"Please add your API key to Render Environment Variables:\n"
-                       f"1. Go to Render Dashboard\n"
-                       f"2. Click your service\n"
-                       f"3. Click 'Environment Variables'\n"
-                       f"4. Add: DEEPSEEK_API_KEY = your-key\n\n"
-                       f"📝 Debug Info:\n"
-                       f"- Key exists: {debug_info['key_exists']}\n"
-                       f"- Key length: {debug_info['key_length']}\n"
-                       f"- Query: {query}\n"
-                       f"- Year: {year}",
-            'full_text': '',
-            'url': '',
-            'thumbnail': '',
-            'source': 'debug_no_key'
-        })
-    
-    # ===== TRY DeepSeek AI =====
+    # ===== FREE: Try Hugging Face API =====
     try:
-        url = "https://api.deepseek.com/v1/chat/completions"
-        headers = {
-            "Authorization": f"Bearer {deepseek_key}",
-            "Content-Type": "application/json"
-        }
+        # Hugging Face free inference API - no API key needed for some models!
+        url = "https://api-inference.huggingface.co/models/mistralai/Mistral-7B-Instruct-v0.1"
         
         clean_query = re.sub(r'[^\w\s]', '', query)
         clean_query = ' '.join(clean_query.split())
         
         prompt = f"""Write a short, engaging article about {clean_query} for a "Today in History" mobile app.
-The article should be 100-150 words long, include key historical facts, be written in a clear, engaging style, and end with an interesting fact.
-Write the article in English:"""
+The article should be 100-150 words long, include key historical facts, and be written in a clear, engaging style."""
 
         data = {
-            "model": "deepseek-chat",
-            "messages": [
-                {"role": "system", "content": "You are a helpful historian writing engaging articles for a mobile app."},
-                {"role": "user", "content": prompt}
-            ],
-            "temperature": 0.7,
-            "max_tokens": 400
+            "inputs": prompt,
+            "parameters": {
+                "max_new_tokens": 400,
+                "temperature": 0.7
+            }
         }
         
-        response = requests.post(url, headers=headers, json=data, timeout=10)
+        response = requests.post(url, headers={"Content-Type": "application/json"}, json=data, timeout=15)
         
         if response.status_code == 200:
             result = response.json()
-            article = result.get('choices', [{}])[0].get('message', {}).get('content', '')
+            # Hugging Face returns different formats
+            if isinstance(result, list) and len(result) > 0:
+                article = result[0].get('generated_text', '')
+            elif isinstance(result, dict):
+                article = result.get('generated_text', '')
+            else:
+                article = str(result)
             
-            if article:
+            # Clean up the response (remove the prompt)
+            if article.startswith(prompt):
+                article = article[len(prompt):].strip()
+            
+            if article and len(article) > 20:
                 return jsonify({
                     'title': f"📜 {clean_query}",
                     'extract': article,
                     'full_text': article,
                     'url': '',
                     'thumbnail': '',
-                    'source': 'deepseek_ai'
+                    'source': 'huggingface_free'
                 })
-        else:
-            # Return the actual API error
-            return jsonify({
-                'title': '⚠️ API Error',
-                'extract': f"❌ **DeepSeek API Error:**\n\n"
-                           f"Status: {response.status_code}\n"
-                           f"Response: {response.text[:200]}\n\n"
-                           f"📝 Query: {query}\n"
-                           f"📅 Year: {year}",
-                'full_text': '',
-                'url': '',
-                'thumbnail': '',
-                'source': 'debug_api_error'
-            })
     except Exception as e:
-        return jsonify({
-            'title': '⚠️ API Exception',
-            'extract': f"❌ **DeepSeek API Exception:**\n\n{str(e)}\n\n"
-                       f"📝 Query: {query}\n"
-                       f"📅 Year: {year}",
-            'full_text': '',
-            'url': '',
-            'thumbnail': '',
-            'source': 'debug_exception'
-        })
+        print(f"Hugging Face error: {e}")
     
-    # ===== SOURCE 2: Fallback to Wikipedia Year =====
+    # ===== FALLBACK: Wikipedia Year =====
     if year:
         try:
             page_title = year
@@ -590,28 +540,9 @@ Write the article in English:"""
             if summary_resp.status_code == 200:
                 summary_data = summary_resp.json()
                 extract = summary_data.get('extract', '')
-                
-                keywords = query.replace(str(year), '').strip().split()
-                matched_sentence = ''
-                
-                if extract:
-                    sentences = extract.split('.')
-                    for sentence in sentences[:10]:
-                        for word in keywords[:3]:
-                            if len(word) > 3 and word.lower() in sentence.lower():
-                                matched_sentence = sentence.strip() + '.'
-                                break
-                        if matched_sentence:
-                            break
-                
-                if matched_sentence:
-                    display_text = f"📅 **In {year}:** {matched_sentence}\n\n📖 From the Wikipedia article about {year}."
-                else:
-                    display_text = f"📅 **{query}**\n\n📖 From the Wikipedia article about {year}:\n\n{extract[:500]}..."
-                
                 return jsonify({
                     'title': f'Year {year}',
-                    'extract': display_text,
+                    'extract': f"📅 **{query}**\n\n📖 From Wikipedia about {year}:\n\n{extract[:500]}...",
                     'full_text': extract,
                     'url': f'https://en.wikipedia.org/wiki/{year}',
                     'thumbnail': summary_data.get('thumbnail', {}).get('source', ''),
@@ -620,17 +551,7 @@ Write the article in English:"""
         except:
             pass
     
-    # ===== SOURCE 3: Final Fallback =====
-    if year:
-        return jsonify({
-            'title': f'About {year}',
-            'extract': f"📜 **{query}**\n\n🔗 Read more: https://en.wikipedia.org/wiki/{year}\n\n💡 This event happened in {year}. Click the link above for more details.",
-            'full_text': query,
-            'url': f'https://en.wikipedia.org/wiki/{year}',
-            'thumbnail': '',
-            'source': 'fallback'
-        })
-    
+    # ===== FINAL FALLBACK =====
     return jsonify({
         'title': 'Historical Event',
         'extract': f"📜 **{query}**\n\n💡 Try searching on Wikipedia:\nhttps://en.wikipedia.org/w/index.php?search={query.replace(' ', '+')}",
