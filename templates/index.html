@@ -514,56 +514,42 @@ function openArticle(year, text) {
             let html = `<h2 class="article-title">${data.title}</h2>`;
             
             if (data.thumbnail) {
-                html += `<img src="${data.thumbnail}" class="article-thumbnail" alt="${data.title}" style="max-width:100%;border-radius:8px;margin:12px 0;">`;
+                html += `<img src="${data.thumbnail}" class="article-thumbnail" alt="${data.title}">`;
             }
             
-            // Clean and format the extract
+            // Format the article text
             let extractText = data.extract || data.full_text || 'No content available';
-            
-            // Split into paragraphs and clean up
             const paragraphs = extractText.split('\n').filter(p => p.trim());
-            
-            html += '<div class="article-text">';
-            if (data.source === 'onthisday_api') {
-                // On This Day API format
-                html += `<p style="color:#FFD700;font-style:italic;">📅 From On This Day API</p>`;
-                paragraphs.forEach(p => {
-                    if (p.trim()) {
-                        html += `<p>${p}</p>`;
-                    }
-                });
-            } else if (data.source === 'wikipedia_year') {
-                // Wikipedia year format
-                html += `<p style="color:#FFD700;font-style:italic;">📖 From Wikipedia</p>`;
-                paragraphs.forEach(p => {
-                    if (p.trim()) {
-                        html += `<p>${p}</p>`;
-                    }
-                });
-            } else {
-                // Fallback format
-                paragraphs.forEach(p => {
-                    if (p.trim()) {
-                        html += `<p>${p}</p>`;
-                    }
-                });
-            }
-            html += '</div>';
-            
-            // Add source link if available
-            if (data.url) {
-                html += `<a href="${data.url}" target="_blank" class="read-more">🔗 Read more →</a>`;
-            }
             
             // Show source badge
             const sourceLabels = {
-                'onthisday_api': '📅 On This Day',
+                'deepseek_ai': '🤖 AI Generated',
                 'wikipedia_year': '📖 Wikipedia',
-                'wikipedia': '📖 Wikipedia',
                 'fallback': '💡 Information',
                 'fallback_final': '💡 Information'
             };
             const sourceLabel = sourceLabels[data.source] || '📖 Source';
+            
+            html += `<div class="article-text" style="margin-top:12px;">`;
+            
+            // Add source badge
+            if (data.source === 'deepseek_ai') {
+                html += `<p style="color:#FFD700;font-style:italic;font-size:0.9em;">🤖 AI-generated article</p>`;
+            } else if (data.source === 'wikipedia_year') {
+                html += `<p style="color:#FFD700;font-style:italic;font-size:0.9em;">📖 From Wikipedia</p>`;
+            }
+            
+            paragraphs.forEach(p => {
+                if (p.trim()) {
+                    html += `<p>${p}</p>`;
+                }
+            });
+            html += '</div>';
+            
+            if (data.url) {
+                html += `<a href="${data.url}" target="_blank" class="read-more">🔗 Read more →</a>`;
+            }
+            
             html += `<p style="text-align:center;color:#666;font-size:0.8em;margin-top:16px;">Source: ${sourceLabel}</p>`;
             
             body.innerHTML = html;
