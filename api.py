@@ -9,7 +9,7 @@ import os
 app = Flask(__name__)
 CORS(app)
 
-# ===== HTML TEMPLATE (everything in one file) =====
+# ===== HTML TEMPLATE (with Quiz!) =====
 HTML_TEMPLATE = """
 <!DOCTYPE html>
 <html lang="en">
@@ -167,6 +167,66 @@ HTML_TEMPLATE = """
             font-size: 0.8em;
         }
 
+        .quiz-container {
+            margin-top: 16px;
+            border-top: 1px solid rgba(255,215,0,0.1);
+            padding-top: 16px;
+        }
+        .quiz-container .quiz-label {
+            color: #FFD700;
+            font-weight: 700;
+            font-size: 0.85em;
+            display: block;
+            margin-bottom: 10px;
+        }
+        .quiz-container .quiz-question {
+            font-size: 1em;
+            color: #ffffff;
+            margin-bottom: 10px;
+        }
+        .quiz-container .quiz-options {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+        }
+        .quiz-container .quiz-options button {
+            padding: 10px 12px;
+            background: rgba(255,215,0,0.05);
+            border: 1px solid rgba(255,215,0,0.15);
+            border-radius: 8px;
+            color: #ffffff;
+            font-size: 0.8em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: left;
+            font-family: inherit;
+        }
+        .quiz-container .quiz-options button:hover {
+            background: rgba(255,215,0,0.15);
+        }
+        .quiz-container .quiz-options button.correct {
+            background: rgba(0,255,0,0.2);
+            border-color: #00ff00;
+        }
+        .quiz-container .quiz-options button.wrong {
+            background: rgba(255,0,0,0.2);
+            border-color: #ff0000;
+        }
+        .quiz-container .quiz-result {
+            margin-top: 10px;
+            font-weight: 600;
+            font-size: 0.95em;
+            min-height: 1.5em;
+        }
+        .quiz-container .quiz-result.correct { color: #00ff00; }
+        .quiz-container .quiz-result.wrong { color: #ff6b6b; }
+        .quiz-container .quiz-stats {
+            margin-top: 10px;
+            font-size: 0.85em;
+            color: #FFD700;
+            text-align: center;
+        }
+
         .refresh-btn {
             display: block;
             width: 100%;
@@ -216,6 +276,14 @@ HTML_TEMPLATE = """
             .header h1 { font-size: 1.6em; }
             .date-picker { flex-direction: column; }
             .date-picker input { width: 100%; }
+            .quiz-container .quiz-options {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        @media (max-width: 380px) {
+            .quiz-container .quiz-options {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
@@ -235,6 +303,15 @@ HTML_TEMPLATE = """
         <div class="fact-card">
             <div class="fact-text" id="factText">Click for a random fact!</div>
             <button class="fact-btn" onclick="getRandomFact()">🎲 Random Fact</button>
+            
+            <div class="quiz-container" id="quizContainer">
+                <span class="quiz-label">📝 QUIZ TIME</span>
+                <div class="quiz-question" id="quizQuestion">Ready to test your history knowledge?</div>
+                <div class="quiz-options" id="quizOptions"></div>
+                <div class="quiz-result" id="quizResult"></div>
+                <div class="quiz-stats" id="quizStats">🏆 Quiz Score: 0</div>
+                <button class="fact-btn" onclick="generateQuiz()" style="margin-top:8px;">📚 New Quiz</button>
+            </div>
         </div>
 
         <div id="content">
@@ -252,8 +329,12 @@ HTML_TEMPLATE = """
     </div>
 
     <script>
+        // ===== STATE =====
         let currentEvents = [];
+        let currentQuiz = null;
+        let quizAnswered = false;
 
+        // ===== UTILITY =====
         function formatDate(date) {
             return date.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
         }
@@ -267,6 +348,7 @@ HTML_TEMPLATE = """
             return new Date();
         }
 
+        // ===== LOAD EVENTS =====
         function loadEvents() {
             const date = getDateFromInput();
             const month = date.getMonth() + 1;
@@ -282,7 +364,6 @@ HTML_TEMPLATE = """
                 </div>
             `;
 
-            // Use the API endpoint
             fetch(`/api/events?month=${month}&day=${day}`)
                 .then(response => response.json())
                 .then(data => {
@@ -355,6 +436,9 @@ HTML_TEMPLATE = """
                     }
 
                     content.innerHTML = html;
+                    
+                    // Generate quiz after events load
+                    setTimeout(generateQuiz, 500);
                 })
                 .catch(err => {
                     content.innerHTML = `
@@ -367,6 +451,7 @@ HTML_TEMPLATE = """
                 });
         }
 
+        // ===== DATE FUNCTIONS =====
         function goToDate() {
             loadEvents();
         }
@@ -377,26 +462,118 @@ HTML_TEMPLATE = """
             loadEvents();
         }
 
+        // ===== RANDOM FACT =====
         function getRandomFact() {
             const allEvents = [];
-            if (currentEvents.events) allEvents.push(...currentEvents.events);
-            if (currentEvents.births) allEvents.push(...currentEvents.births);
-            if (currentEvents.deaths) allEvents.push(...currentEvents.deaths);
+            if (currentEvents.events) allEvents.push(...currentEvents.events.map(e => ({...e, type: 'event'})));
+            if (currentEvents.births) allEvents.push(...currentEvents.births.map(e => ({...e, type: 'birth'})));
+            if (currentEvents.deaths) allEvents.push(...currentEvents.deaths.map(e => ({...e, type: 'death'})));
             
             if (allEvents.length === 0) {
-                document.getElementById('factText').innerHTML = 'No facts available!';
+                document.getElementById('factText').innerHTML = 'No facts available for this date!';
                 return;
             }
             
             const random = allEvents[Math.floor(Math.random() * allEvents.length)];
+            const emojis = { event: '🔥', birth: '🎂', death: '🕊️' };
             document.getElementById('factText').innerHTML = 
-                `<span style="color:#FFD700;">${random.year}</span> — ${random.text}`;
+                `${emojis[random.type] || '📜'} <span style="color:#FFD700;">${random.year}</span> — ${random.text}`;
         }
 
-        // Initialize
+        // ===== QUIZ FEATURE =====
+        function generateQuiz() {
+            const allEvents = [];
+            if (currentEvents.events) allEvents.push(...currentEvents.events.map(e => ({...e, type: 'event'})));
+            if (currentEvents.births) allEvents.push(...currentEvents.births.map(e => ({...e, type: 'birth'})));
+            if (currentEvents.deaths) allEvents.push(...currentEvents.deaths.map(e => ({...e, type: 'death'})));
+            
+            if (allEvents.length < 4) {
+                document.getElementById('quizQuestion').innerHTML = 'Not enough events for a quiz today! 😅';
+                document.getElementById('quizOptions').innerHTML = '';
+                document.getElementById('quizResult').innerHTML = '';
+                return;
+            }
+
+            // Pick a random event as the correct answer
+            const correct = allEvents[Math.floor(Math.random() * allEvents.length)];
+            
+            // Get 3 wrong answers (different years)
+            const wrongs = allEvents.filter(e => e.year !== correct.year);
+            const shuffledWrongs = wrongs.sort(() => Math.random() - 0.5).slice(0, 3);
+            
+            // If we don't have enough wrong answers, add sample ones
+            while (shuffledWrongs.length < 3) {
+                const sampleYears = ['1776', '1865', '1941', '1969', '1492', '1789'];
+                const sampleTexts = ['Declaration of Independence', 'Civil War ended', 'Pearl Harbor attack', 'Moon landing', 'Columbus arrived', 'French Revolution'];
+                const idx = shuffledWrongs.length;
+                shuffledWrongs.push({
+                    year: sampleYears[idx % sampleYears.length],
+                    text: sampleTexts[idx % sampleTexts.length],
+                    type: 'event'
+                });
+            }
+            
+            // Combine and shuffle
+            const options = [correct, ...shuffledWrongs].sort(() => Math.random() - 0.5);
+            
+            currentQuiz = {
+                correct: correct,
+                options: options
+            };
+            quizAnswered = false;
+            
+            // Display the question
+            document.getElementById('quizQuestion').innerHTML = 
+                `<span style="color:#FFD700;">❓ What happened in <strong>${correct.year}</strong>?</span>`;
+            
+            // Display options
+            const optionsContainer = document.getElementById('quizOptions');
+            optionsContainer.innerHTML = '';
+            options.forEach((option) => {
+                const btn = document.createElement('button');
+                btn.textContent = `${option.text.substring(0, 40)}${option.text.length > 40 ? '...' : ''}`;
+                btn.onclick = function() {
+                    if (quizAnswered) return;
+                    quizAnswered = true;
+                    const resultDiv = document.getElementById('quizResult');
+                    
+                    if (option.year === currentQuiz.correct.year && option.text === currentQuiz.correct.text) {
+                        btn.classList.add('correct');
+                        resultDiv.innerHTML = '✅ Correct! Well done! 🎉';
+                        resultDiv.className = 'quiz-result correct';
+                        let score = parseInt(localStorage.getItem('quizScore') || '0');
+                        score++;
+                        localStorage.setItem('quizScore', score);
+                        updateQuizStats();
+                    } else {
+                        btn.classList.add('wrong');
+                        resultDiv.innerHTML = `❌ Wrong! Correct: ${currentQuiz.correct.text}`;
+                        resultDiv.className = 'quiz-result wrong';
+                        // Highlight correct answer
+                        document.querySelectorAll('#quizOptions button').forEach(b => {
+                            if (b.textContent === currentQuiz.correct.text.substring(0, 40) || 
+                                b.textContent === currentQuiz.correct.text.substring(0, 40) + '...') {
+                                b.classList.add('correct');
+                            }
+                        });
+                    }
+                };
+                optionsContainer.appendChild(btn);
+            });
+            
+            document.getElementById('quizResult').innerHTML = '';
+        }
+
+        function updateQuizStats() {
+            const score = parseInt(localStorage.getItem('quizScore') || '0');
+            document.getElementById('quizStats').innerHTML = `🏆 Quiz Score: ${score}`;
+        }
+
+        // ===== INITIALIZE =====
         document.addEventListener('DOMContentLoaded', function() {
             const today = new Date();
             document.getElementById('dateInput').value = today.toISOString().split('T')[0];
+            updateQuizStats();
             loadEvents();
         });
     </script>
